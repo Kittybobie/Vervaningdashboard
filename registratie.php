@@ -69,62 +69,65 @@
 </head>
 <body>
 <?php
-    // Databaseverbinding
-    $host = 'localhost';
-    $db = 'aanwezigheidsdashboard';
-    $user = 'root';
-    $pass = '';
+        // Databaseverbinding
+        $mysqli = new mysqli("localhost", "root", "", "aanwezigheidsdashboard");
+        if ($mysqli->connect_error) {
+            die("Connection failed: " . $mysqli->connect_error);
+        }
 
-    try {
-        $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    } catch (PDOException $e) {
-        die("Connection failed: " . $e->getMessage());
-    }
+        // Verwerk formulier indien ingediend
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $leraar_id = $_POST['leraar_id'];
+            $status = $_POST['status'];
+            $reden = $_POST['reden'] ?? null;
 
-    // Verwerk formulier indien ingediend
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $leraar_id = $_POST['leraar_id'];
-        $status = $_POST['status'];
-        $reden = $_POST['reden'] ?? null;
+            $stmt = $mysqli->prepare("INSERT INTO attendance (teacher_id, date, status, reason) VALUES (?, CURDATE(), ?, ?)");
+            if (!$stmt) {
+                die("Error preparing query: " . $mysqli->error);
+            }
+            $stmt->bind_param("sss", $leraar_id, $status, $reden);
+            $stmt->execute();
+        }
 
-        $stmt = $pdo->prepare("INSERT INTO attendance (teacher_id, date, status, reason) VALUES (?, CURDATE(), ?, ?)");
-        $stmt->execute([$leraar_id, $status, $reden]);
-    }
+        // Haal leerkrachten op
+        $result = $mysqli->query("SELECT * FROM teachers");
+        if (!$result) {
+            die("Error fetching teachers: " . $mysqli->error);
+        }
 
-    // Haal leerkrachten op
-    $leraren = $pdo->query("SELECT * FROM teachers")->fetchAll();
+        // Controleer of er leerkrachten zijn gevonden
+        if ($result->num_rows > 0) {
+            echo "<div class='container'>";
+            echo "<h1>Aanwezigheidsregistratie</h1>";
+            echo "<form method='POST'>";
+            echo "<div class='form-group'>";
+            echo "<label for='leraar_id'>Leerkracht:</label>";
+            echo "<select name='leraar_id' class='form-control' required>";
+            
+            while ($row = $result->fetch_assoc()) {
+                echo "<option value='" . htmlspecialchars($row['id']) . "'>" . htmlspecialchars($row['name']) . "</option>";
+            }
+            
+            echo "</select></div>";
+            echo "<div class='form-group'>";
+            echo "<label>Status:</label>";
+            echo "<select name='status' class='form-control' required>";
+            echo "<option value='present'>Aanwezig</option>";
+            echo "<option value='absent'>Afwezig</option>";
+            echo "<option value='meeting'>In vergadering</option>";
+            echo "</select></div>";
+            echo "<div class='form-group'>";
+            echo "<label for='reden'>Reden (optioneel):</label>";
+            echo "<textarea name='reden' class='form-control'></textarea>";
+            echo "</div>";
+            echo "<button type='submit' class='btn btn-primary'>Registreren</button>";
+            echo "</form></div>";
+        } else {
+            echo "<p>Geen leerkrachten gevonden.</p>";
+        }
 
-    // Debug: Controleer of leerkrachten zijn opgehaald
-    if (empty($leraren)) {
-        echo "<p>Geen leerkrachten gevonden.</p>";
-    }
+        // Sluit de statement en de databaseverbinding
+        $mysqli->close();
 ?>
-    <div class="container">
-        <h1>Aanwezigheidsregistratie</h1>
-        <form method="POST">
-            <div class="form-group">
-                <label for="leraar_id">Leerkracht:</label>
-                <select name="leraar_id" class="form-control" required>
-                    <?php foreach ($leraren as $leraar): ?>
-                        <option value="<?php echo $leraar['id']; ?>"><?php echo $leraar['name']; ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Status:</label>
-                <select name="status" class="form-control" required>
-                    <option value="present">Aanwezig</option>
-                    <option value="absent">Afwezig</option>
-                    <option value="meeting">In vergadering</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="reden">Reden (optioneel):</label>
-                <textarea name="reden" class="form-control"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Registreren</button>
-        </form>
-    </div>
 </body>
 </html>
