@@ -47,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 
 
-
                 // SQL-query om aanwezigheid in te voegen of bij te werken
                 $sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
                 VALUES (?, CURDATE(), ?, ?, ?, ?, ?) 
@@ -84,9 +83,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $sql_reset_auto_increment = "ALTER TABLE attendance AUTO_INCREMENT = 1";
         // Voer de query uit
         if ($mysqli->query($sql_reset_auto_increment) === TRUE) {
-            echo "AUTO_INCREMENT is succesvol gereset naar 1";
+            
         } else {
-            echo "Fout bij het resetten van AUTO_INCREMENT: " . $mysqli->error;
+            
         }
 }
 ?>
