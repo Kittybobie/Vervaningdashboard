@@ -55,8 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $stmt = $mysqli->prepare($sql);
                 if ($stmt === false) {
-                error_log("Prepare failed: " . $mysqli->error);
-                continue;
+                    error_log("Prepare failed: " . $mysqli->error);
+                    continue;
                 }
 
                 // Bind de parameters
@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Voer de query uit
                 if (!$stmt->execute()) {
-                error_log("Execute failed: " . $stmt->error);
+                    error_log("Execute failed: " . $stmt->error);
                 }
 
                 $stmt->close();
@@ -79,118 +79,228 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $mysqli->query($sql);
     }
 
-
-        $sql_reset_auto_increment = "ALTER TABLE attendance AUTO_INCREMENT = 1";
-        // Voer de query uit
-        if ($mysqli->query($sql_reset_auto_increment) === TRUE) {
-            
-        } else {
-            
-        }
+    $sql_reset_auto_increment = "ALTER TABLE attendance AUTO_INCREMENT = 1";
+    // Voer de query uit
+    if ($mysqli->query($sql_reset_auto_increment) === TRUE) {
+        
+    } else {
+        
+    }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="nl">
 <head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <meta charset="UTF-8">
     <title>Aanwezigheidsdashboard</title>
     <style>
-        /* Algemene body-stijl */
+        /* General Page Styling */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #cfe2ff, #e7f0ff);
             color: #333;
+            margin: 0;
+            padding: 0;
         }
 
+        /* Main Container */
         .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-top: 200px;
+            max-width: 950px;
+            margin: 50px auto;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease-in-out;
         }
 
+        /* Header */
         h1 {
-            color: #007bff;
-            margin-bottom: 20px;
             text-align: center;
-        }
-
-        .form-group {
+            color: #007bff;
+            font-size: 26px;
+            font-weight: 700;
             margin-bottom: 15px;
         }
 
-        label {
-            display: block;
-            margin-bottom: 5px;
+        /* Selected Day */
+        h2 {
+            text-align: center;
+            color: #555;
+            font-size: 18px;
             font-weight: bold;
-        }
-
-        input[type="text"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .btn-day {
-            margin-left: 52px;
             margin-bottom: 20px;
         }
 
-        .btn-primary {
-            margin-top: 20px;
-            width: 100%;
-            display: block;
-        }
-
-        .btn-zoeken {
-            width: 100%;
-            display: block;
-            margin-top: 20px;
+        /* Buttons Styling */
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease-in-out;
+            font-weight: 600;
+            box-shadow: 0 3px 8px rgba(0, 123, 255, 0.3);
         }
 
         button:hover {
-            background-color: #0056b3;
+            background: #0056b3;
+            box-shadow: 0 5px 12px rgba(0, 123, 255, 0.4);
         }
 
+        /* Day Selection Buttons */
+        .btn-day {
+            display: inline-block;
+            width: 18%;
+            margin: 5px;
+            text-align: center;
+            font-size: 14px;
+            border-radius: 8px;
+        }
+
+        /* Search Input */
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin-top: 10px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s ease-in-out;
+        }
+
+        input[type="text"]:focus {
+            border: 2px solid #007bff;
+            outline: none;
+        }
+
+        /* Suggestions Dropdown */
+        #suggestions {
+            border: 1px solid #ccc;
+            max-height: 150px;
+            overflow-y: auto;
+            position: absolute;
+            background: white;
+            z-index: 1000;
+            width: calc(100% - 20px);
+            margin-top: -60px; /* Adjust to align with input */
+        }
+
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Search Button */
+        .btn-zoeken {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* Table Styling */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            font-size: 15px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            table-layout: fixed; /* ✅ Ensures proper width handling */
         }
 
-        th, td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: left;
-        }
-
+        /* Table Headers */
         th {
-            background-color: #f2f2f2;
+            background: #007bff;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center; /* ✅ Centers header text */
+            display:table-cell;
+            vertical-align: middle; /* ✅ Ensures text is vertically centered */
         }
 
-        .search-container {
-            display: none;
+        /* Table Cells */
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border: 1px solid #ddd;
+            word-wrap: break-word;
+            overflow: hidden;
+            white-space: nowrap;
         }
 
-        .search-container.show {
-            display: block;
+        /* Name Column Styling */
+        td {
+            font-weight: bold;
+            width: 15%;
+            text-align: center; /* ✅ Centers text horizontally */
+            vertical-align: middle; /* ✅ Centers text vertically */
+        }
+
+        /* Dropdown and Input Fields */
+        select, textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 2px solid #ccc;
+            font-size: 14px;
+            transition: border 0.3s ease-in-out;
+            background: #FAFAFA;
+            color: #333;
+        }
+
+        /* ✅ Ensure textareas are inside table cells properly */
+        td textarea {
+            width: 100%;
+            min-height: 40px;
+            resize: none;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 14px;
+            box-sizing: border-box; /* ✅ Prevents overflow */
+        }
+
+        /* Focus effect */
+        select:focus, textarea:focus {
+            border: 2px solid #007bff;
+            outline: none;
+        }
+
+        /* Save Button */
+        .btn-primary {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 15px;
+            }
+
+            .btn-day {
+                width: 45%;
+            }
+
+            table {
+                font-size: 13px;
+            }
         }
     </style>
 </head>
@@ -215,11 +325,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Zoekformulier (verschijnt alleen als een dag is geselecteerd) -->
     <?php if ($selected_day): ?>
-        <div class="search-container show">
+        <div class="search-container show" style="position: relative;">
             <form method="POST" class="form-group">
-                <input type="text" name="teacher_name" style=" margin-right: 15px; width:97.2%;" placeholder="Zoek leerkracht..." required>
+                <input type="text" id="teacher_search" name="teacher_name" style="margin-right: 15px; width:97.2%;" placeholder="Zoek leerkracht..." required autocomplete="off">
                 <button type="submit" class="btn-zoeken" name="search">Zoeken</button>
             </form>
+            <div id="suggestions"></div> <!-- Suggestions dropdown -->
         </div>
     <?php endif; ?>
 
@@ -266,6 +377,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#teacher_search').on('keyup', function() {
+        let searchTerm = $(this).val();
+        if (searchTerm.length >= 1) {
+            $.ajax({
+                url: 'autocomplete.php',
+                type: 'GET',
+                data: { term: searchTerm },
+                success: function(data) {
+                    let suggestions = JSON.parse(data);
+                    $('#suggestions').empty();
+                    suggestions.forEach(function(name) {
+                        $('#suggestions').append('<div class="suggestion-item">' + name + '</div>');
+                    });
+                }
+            });
+        } else {
+            $('#suggestions').empty();
+        }
+    });
+
+    $(document).on('click', '.suggestion-item', function() {
+        $('#teacher_search').val($(this).text());
+        $('#suggestions').empty();
+    });
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 

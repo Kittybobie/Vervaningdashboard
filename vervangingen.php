@@ -4,9 +4,9 @@ session_start();
 // Definieer de dagen van de week
 $days_of_week = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag'];
 
-// Verkrijg de geselecteerde dag uit de sessie (optioneel)
+// Verkrijg de geselecteerde dag uit de sessie
 if (!isset($_SESSION['selected_day'])) {
-    $_SESSION['selected_day'] = 'Maandag';  // Default naar Maandag als geen dag geselecteerd
+    $_SESSION['selected_day'] = 'Maandag';
 }
 $selected_day = $_SESSION['selected_day'];
 
@@ -18,8 +18,8 @@ if ($mysqli->connect_error) {
 
 // Controleer of er een POST-verzoek is gedaan om de dag te wijzigen
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['day'])) {
-    $_SESSION['selected_day'] = $_POST['day']; // Update de sessie direct na de klik
-    $selected_day = $_SESSION['selected_day'];  // Haal de nieuwe geselecteerde dag op uit de sessie
+    $_SESSION['selected_day'] = $_POST['day'];
+    $selected_day = $_SESSION['selected_day'];
 }
 
 // Zoek de index van de huidige geselecteerde dag
@@ -47,28 +47,46 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <title>Vervangingen - Aanwezigheidsdashboard</title>
+    <!-- ✅ Bootstrap toegevoegd -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Algemene stijlen voor de tabel en pagina */
+        /* Algemene stijlen */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #cfe2ff, #e7f0ff);
             color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: top;
+            margin-top:50px;
+
         }
 
         .container {
-            max-width: 900px;
-            margin: 20px auto;
-            padding: 20px;
+            max-width: 950px;
             background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
             color: #007bff;
+            font-size: 28px;
+            font-weight: bold;
             text-align: center;
+            margin-bottom: 10px;
         }
 
+        h2 {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        /* ✅ Duidelijkere dag navigatie */
         .day-nav {
             display: flex;
             justify-content: space-between;
@@ -76,40 +94,68 @@ $result = $stmt->get_result();
             margin-bottom: 20px;
         }
 
-        .day-nav button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .day-nav button:hover {
-            background-color: #0056b3;
-        }
-
-        .selected-day {
-            font-size: 20px;
+        .btn-day {
+            font-size: 16px;
+            padding: 10px 15px;
             font-weight: bold;
-            color: #333;
+            border-radius: 8px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn-day:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        /* ✅ Tabelstijl */
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            background-color: white;
+        }
+
+        /* ✅ Koptekst centreren en visueel aantrekkelijk maken */
+        th {
+            background: #007bff;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+            vertical-align: middle;
+            padding: 12px;
+            font-size: 14px;
         }
 
         th, td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: left;
+            text-align: center;
+            padding: 12px;
+            border: 1px solid #ddd;
         }
 
-        th {
-            background-color: #f2f2f2;
+        /* ✅ Leeg bericht visueel opvallend maken */
+        .empty-message {
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #666;
+            padding: 20px;
+        }
+
+        /* ✅ Responsief maken */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 15px;
+            }
+            table {
+                font-size: 13px;
+            }
         }
     </style>
 </head>
@@ -118,75 +164,68 @@ $result = $stmt->get_result();
 <div class="container">
     <h1>Aanwezigheidsregistratie</h1>
 
-    <!-- Navigatie voor dagen (vorige en volgende dag) -->
+    <!-- ✅ Navigatie voor dagen -->
     <div class="day-nav">
         <form method="POST" action="">
-            <button type="submit" name="day" value="<?php echo $previous_day; ?>">&#8592; Vorige Dag</button>
+            <button type="submit" name="day" value="<?php echo $previous_day; ?>" class="btn btn-outline-primary btn-day">&#8592; Vorige Dag</button>
         </form>
 
+        <h2><?php echo htmlspecialchars($selected_day); ?></h2>
+
         <form method="POST" action="">
-            <button type="submit" name="day" value="<?php echo $next_day; ?>">Volgende Dag &#8594;</button>
+            <button type="submit" name="day" value="<?php echo $next_day; ?>" class="btn btn-outline-primary btn-day">Volgende Dag &#8594;</button>
         </form>
     </div>
 
-    <!-- Tabel voor de vervangingen -->
-    <h2>Vervangingen voor <?php echo htmlspecialchars($selected_day); ?></h2>
-    <table>
-        <tr>
-            <th>Naam</th>
-            <th>Lesuur</th>
-            <th>Status</th>
-            <th>Reden</th>
-            <th>Taak</th>
-        </tr>
-
-        <?php
-        // Weergeven van de vervangingen in de tabel
-        if ($result->num_rows > 0) {
-            $previous_teacher = ""; // Houd de vorige leerkracht bij
-            $rowspan = 0; // Houd het aantal rijen bij voor rowspan
-
-            // Eerst tellen we het aantal rijen per leerkracht
-            $data = [];
-            while ($row = $result->fetch_assoc()) {
-                $data[$row['teacher_name']][] = $row;
-            }
-
-            // Nu tonen we de gegevens met rowspan
-            foreach ($data as $teacher_name => $lessons) {
-                $rowspan = count($lessons); // Aantal lesuren voor deze leerkracht
-                foreach ($lessons as $index => $lesson) {
-                    if ($index === 0) {
-                        // Eerste rij voor deze leerkracht
-                        echo "<tr>";
-                        echo "<td rowspan='" . $rowspan . "'>" . htmlspecialchars($teacher_name) . "</td>";
-                        echo "<td>" . "Lesuur " . $lesson['hour'] . "</td>";
-                        echo "<td>" . htmlspecialchars($lesson['status']) . "</td>"; // Status
-                        echo "<td>" . htmlspecialchars($lesson['reason']) . "</td>"; // Reden
-                        echo "<td>" . htmlspecialchars($lesson['tasks']) . "</td>"; // Taak
-                        echo "</tr>";
-                    } else {
-                        // Volgende rijen voor dezelfde leerkracht
-                        echo "<tr>";
-                        echo "<td>" . "Lesuur " . $lesson['hour'] . "</td>";
-                        echo "<td>" . htmlspecialchars($lesson['status']) . "</td>"; // Status
-                        echo "<td>" . htmlspecialchars($lesson['reason']) . "</td>"; // Reden
-                        echo "<td>" . htmlspecialchars($lesson['tasks']) . "</td>"; // Taak
-                        echo "</tr>";
+    <!-- ✅ Tabel voor de vervangingen -->
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+            <thead>
+                <tr>
+                    <th>Naam</th>
+                    <th>Lesuur</th>
+                    <th>Status</th>
+                    <th>Reden</th>
+                    <th>Taak</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                if ($result->num_rows > 0) {
+                    $data = [];
+                    while ($row = $result->fetch_assoc()) {
+                        $data[$row['teacher_name']][] = $row;
                     }
+
+                    foreach ($data as $teacher_name => $lessons) {
+                        $rowspan = count($lessons);
+                        foreach ($lessons as $index => $lesson) {
+                            echo "<tr>";
+                            if ($index === 0) {
+                                echo "<td rowspan='$rowspan' class='fw-bold'>" . htmlspecialchars($teacher_name) . "</td>";
+                            }
+                            echo "<td>Lesuur " . $lesson['hour'] . "</td>";
+                            echo "<td>" . htmlspecialchars($lesson['status']) . "</td>";
+                            echo "<td>" . htmlspecialchars($lesson['reason']) . "</td>";
+                            echo "<td>" . htmlspecialchars($lesson['tasks']) . "</td>";
+                            echo "</tr>";
+                        }
+                    }
+                } else {
+                    echo "<tr><td colspan='5' class='empty-message'>Geen vervangingen gevonden.</td></tr>";
                 }
-            }
-        } else {
-            echo "<tr><td colspan='5'>Geen vervangingen gevonden.</td></tr>";
-        }
-        ?>
-    </table>
+                ?>
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<!-- ✅ Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
 
 <?php
-// Sluit de databaseverbinding
 $mysqli->close();
 ?>
