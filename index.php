@@ -31,8 +31,7 @@
     $current_day_index = array_search($selected_day, $days_of_week);
     $previous_day = $days_of_week[($current_day_index - 1 + count($days_of_week)) % count($days_of_week)];
     $next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
-
-    $selected_date = date('Y-m-d', strtotime("this week $selected_day"));
+    
 
     $sql = "SELECT t.name AS teacher_name, a.date, a.hour, a.status, a.reason, a.tasks 
     FROM attendance a
