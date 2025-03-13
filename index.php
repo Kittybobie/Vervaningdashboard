@@ -32,30 +32,27 @@ $current_day_index = array_search($selected_day, $days_of_week);
 $previous_day = $days_of_week[($current_day_index - 1 + count($days_of_week)) % count($days_of_week)];
 $next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
 
-// Converteer de geselecteerde dag naar een datum van deze week
-$today = new DateTime();
-$day_of_week = $today->format('N') - 1; // 0 = Maandag, 4 = Vrijdag
-$target_day_index = array_search($selected_day, $days_of_week);
-$diff = $target_day_index - $day_of_week;
-$selected_date = $today->modify("$diff days")->format('Y-m-d');
-
-// SQL-query met correcte datum
-$sql = "SELECT t.name AS teacher_name, a.date, a.hour, a.status, a.reason, a.tasks 
+// SQL-query: filteren op de kolom `day` i.p.v. `date`
+$sql = "SELECT t.name AS teacher_name,
+               a.day,
+               a.hour,
+               a.status,
+               a.reason,
+               a.tasks
         FROM attendance a
         JOIN teachers t ON a.teacher_id = t.id
-        WHERE a.date = ?
+        WHERE a.day = ?
         ORDER BY a.hour ASC";
 
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $selected_date);
+$stmt->bind_param("s", $selected_day);
 $stmt->execute();
 $result = $stmt->get_result();
 
 $data = [];
 while ($row = $result->fetch_assoc()) {
-    $data[$row['date']][$row['teacher_name']][] = $row;
+    $data[$row['day']][$row['teacher_name']][] = $row;
 }
-
 $stmt->close();
 ?>
 
@@ -193,8 +190,7 @@ $stmt->close();
                     <?php foreach ($data as $day => $teachers) : ?>
                         <?php foreach ($teachers as $teacher_name => $lessons) : ?>
                             <?php 
-                                // Filter alleen uren die niet 'aanwezig' zijn
-                                // Pas de status-waarden aan indien nodig (bijv. 'afwezig', 'in vergadering')
+                                // Filter alleen lessen met status 'afwezig' of 'in vergadering'
                                 $filtered_lessons = array_filter($lessons, function($lesson) {
                                     return in_array($lesson['status'], ['afwezig', 'in vergadering']);
                                 });
