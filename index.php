@@ -6,7 +6,13 @@ if (!isset($conn)) {
 }
 
 session_start();
-$teacher_id = $_SESSION['teacher_id'] ?? null;
+
+if (!isset($_SESSION['teacher_id'])) {
+    die("Fout: Je bent niet ingelogd of de sessie is verlopen.");
+}
+
+$teacher_id = $_SESSION['teacher_id'];
+
 
 // Definieer de dagen van de week
 $days_of_week = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag'];
