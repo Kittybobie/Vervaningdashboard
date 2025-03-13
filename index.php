@@ -1,17 +1,17 @@
 <?php
-include __DIR__ . '/config.php';
-include 'config.php';
-if (!isset($conn)) {
-    die("Fout: Databaseverbinding is niet ingesteld.");
-}
-
 session_start();
+include __DIR__ . '/config.php';
 
-if (!isset($_SESSION['teacher_id'])) {
-    die("Fout: Je bent niet ingelogd of de sessie is verlopen.");
-}
+// Haal een standaard teacher_id uit de database
+$result = $conn->query("SELECT id FROM teachers LIMIT 1");
+$row = $result->fetch_assoc();
+$_SESSION['teacher_id'] = $row['id'] ?? null;
 
 $teacher_id = $_SESSION['teacher_id'];
+
+if (!$teacher_id) {
+    die("Fout: Geen leerkracht gevonden in de database.");
+}
 
 
 // Definieer de dagen van de week
