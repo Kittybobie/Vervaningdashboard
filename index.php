@@ -32,23 +32,23 @@
     $previous_day = $days_of_week[($current_day_index - 1 + count($days_of_week)) % count($days_of_week)];
     $next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
 
-    // Haal gegevens uit de database voor de geselecteerde dag
-    $sql = "SELECT t.name AS teacher_name, a.hour, a.status, a.reason, a.tasks 
-            FROM attendance a
-            JOIN teachers t ON a.teacher_id = t.id
-            WHERE a.day = ?";
+    $sql = "SELECT t.name AS teacher_name, a.date, a.hour, a.status, a.reason, a.tasks 
+    FROM attendance a
+    JOIN teachers t ON a.teacher_id = t.id
+    WHERE a.date = ?
+    ORDER BY a.hour ASC";
+
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $selected_day);
+    $stmt->bind_param("s", $selected_date);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // Verwerk de resultaten in een array
     $data = [];
     while ($row = $result->fetch_assoc()) {
-        $data[$row['teacher_name']][] = $row;
+    $data[$row['date']][$row['teacher_name']][] = $row;
     }
-
     $stmt->close();
+
 ?>
 
 <!DOCTYPE html>
@@ -177,33 +177,32 @@
                 </tr>
             </thead>
             <tbody>
-                <?php if (!empty($data)) {
-                    foreach ($data as $teacher_name => $lessons) {
-                        // Filter lessen: Alleen tonen als status "absent" of "meeting" is
-                        $filtered_lessons = array_filter($lessons, function ($lesson) {
-                            return in_array($lesson['status'], ['afwezig', 'in vergadering']);
-                        });
+                <?php foreach ($data as $day => $teachers) : ?>
+                    <?php foreach ($teachers as $teacher_name => $lessons) : ?>
+                        <?php 
+                            $filtered_lessons = array_filter($lessons, function ($lesson) {
+                                return in_array($lesson['status'], ['absent', 'meeting']);
+                            });
 
-                        if (!empty($filtered_lessons)) {
-                            $rowspan = count($filtered_lessons);
-                            $first_row = true;
-                            foreach ($filtered_lessons as $lesson) {
-                                echo "<tr>";
-                                if ($first_row) {
-                                    echo "<td rowspan='$rowspan' class='fw-bold'>" . htmlspecialchars($teacher_name ?? '') . "</td>";
-                                    $first_row = false;
+                            if (!empty($filtered_lessons)) {
+                                $rowspan = count($filtered_lessons);
+                                $first_row = true;
+                                foreach ($filtered_lessons as $lesson) {
+                                    echo "<tr>";
+                                    if ($first_row) {
+                                        echo "<td rowspan='$rowspan' class='fw-bold'>" . htmlspecialchars($teacher_name ?? '') . "</td>";
+                                        $first_row = false;
+                                    }
+                                    echo "<td>Lesuur " . htmlspecialchars($lesson['hour'] ?? '') . "</td>";
+                                    echo "<td>" . htmlspecialchars($lesson['status'] ?? '') . "</td>";
+                                    echo "<td>" . htmlspecialchars($lesson['reason'] ?? '') . "</td>";
+                                    echo "<td>" . htmlspecialchars($lesson['tasks'] ?? '') . "</td>";
+                                    echo "</tr>";
                                 }
-                                echo "<td>Lesuur " . htmlspecialchars($lesson['hour'] ?? '') . "</td>";
-                                echo "<td>" . htmlspecialchars($lesson['status'] ?? '') . "</td>";
-                                echo "<td>" . htmlspecialchars($lesson['reason'] ?? '') . "</td>";
-                                echo "<td>" . htmlspecialchars($lesson['tasks'] ?? '') . "</td>";
-                                echo "</tr>";
                             }
-                        }
-                    }
-                } else {
-                    echo "<tr><td colspan='5' class='empty-message'>Geen vervangingen gevonden.</td></tr>";
-                } ?>
+                        ?>
+                    <?php endforeach; ?>
+                <?php endforeach; ?>
             </tbody>
         </table>
     </div>
