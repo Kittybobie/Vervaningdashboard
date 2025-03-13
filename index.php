@@ -36,11 +36,14 @@ $previous_day = $days_of_week[($current_day_index - 1 + count($days_of_week)) % 
 $next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
 
 // SQL-query om de vervangingen op te halen
-$sql = "SELECT t.name AS teacher_name, a.day, a.hour, a.reason, a.tasks, a.status 
-        FROM attendance a
-        JOIN teachers t ON a.teacher_id = t.id
-        WHERE a.status IN ('absent', 'meeting') AND a.day = ? 
-        ORDER BY a.day, a.hour";
+$sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
+        VALUES (?, CURDATE(), ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE 
+        day = VALUES(day), 
+        status = VALUES(status), 
+        reason = VALUES(reason), 
+        tasks = VALUES(tasks)";
+
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $selected_day);
