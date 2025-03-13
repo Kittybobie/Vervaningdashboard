@@ -193,20 +193,33 @@ $stmt->close();
                     <?php foreach ($data as $day => $teachers) : ?>
                         <?php foreach ($teachers as $teacher_name => $lessons) : ?>
                             <?php 
-                                $first_row = true;
-                                foreach ($lessons as $lesson) : 
+                                // Filter alleen uren die niet 'aanwezig' zijn
+                                // Pas de status-waarden aan indien nodig (bijv. 'afwezig', 'in vergadering')
+                                $filtered_lessons = array_filter($lessons, function($lesson) {
+                                    return in_array($lesson['status'], ['afwezig', 'in vergadering']);
+                                });
+
+                                if (!empty($filtered_lessons)) {
+                                    $first_row = true;
+                                    $rowspan = count($filtered_lessons);
+                                    foreach ($filtered_lessons as $lesson) :
                             ?>
-                                <tr>
-                                    <?php if ($first_row) : ?>
-                                        <td class="fw-bold" rowspan="<?php echo count($lessons); ?>"><?php echo htmlspecialchars($teacher_name); ?></td>
-                                        <?php $first_row = false; ?>
-                                    <?php endif; ?>
-                                    <td>Lesuur <?php echo htmlspecialchars($lesson['hour'] ?? ''); ?></td>
-                                    <td><?php echo htmlspecialchars($lesson['status'] ?? 'Onbekend'); ?></td>
-                                    <td><?php echo htmlspecialchars($lesson['reason'] ?? '-'); ?></td>
-                                    <td><?php echo htmlspecialchars($lesson['tasks'] ?? '-'); ?></td>
-                                </tr>
-                            <?php endforeach; ?>
+                                        <tr>
+                                            <?php if ($first_row) : ?>
+                                                <td class="fw-bold" rowspan="<?php echo $rowspan; ?>">
+                                                    <?php echo htmlspecialchars($teacher_name); ?>
+                                                </td>
+                                                <?php $first_row = false; ?>
+                                            <?php endif; ?>
+                                            <td>Lesuur <?php echo htmlspecialchars($lesson['hour'] ?? ''); ?></td>
+                                            <td><?php echo htmlspecialchars($lesson['status'] ?? 'Onbekend'); ?></td>
+                                            <td><?php echo htmlspecialchars($lesson['reason'] ?? '-'); ?></td>
+                                            <td><?php echo htmlspecialchars($lesson['tasks'] ?? '-'); ?></td>
+                                        </tr>
+                            <?php 
+                                    endforeach;
+                                }
+                            ?>
                         <?php endforeach; ?>
                     <?php endforeach; ?>
                 <?php endif; ?>
