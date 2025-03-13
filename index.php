@@ -186,10 +186,12 @@ $stmt->close();
 
                         if (!empty($filtered_lessons)) {
                             $rowspan = count($filtered_lessons);
-                            foreach ($filtered_lessons as $index => $lesson) {
+                            $first_row = true;
+                            foreach ($filtered_lessons as $lesson) {
                                 echo "<tr>";
-                                if ($index === 0) {
+                                if ($first_row) {
                                     echo "<td rowspan='$rowspan' class='fw-bold'>" . htmlspecialchars($teacher_name ?? '') . "</td>";
+                                    $first_row = false;
                                 }
                                 echo "<td>Lesuur " . htmlspecialchars($lesson['hour'] ?? '') . "</td>";
                                 echo "<td>" . htmlspecialchars($lesson['status'] ?? '') . "</td>";
