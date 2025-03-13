@@ -1,4 +1,8 @@
 <?php
+include 'config.php'; // Zorgt dat de databaseconnectie wordt ingeladen
+?>
+
+<?php
 session_start();
 
 // Definieer de dagen van de week

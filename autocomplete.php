@@ -1,4 +1,7 @@
 <?php
+include 'config.php'; // Zorgt dat de databaseconnectie wordt ingeladen
+?>
+<?php
 session_start();
 $mysqli = new mysqli("localhost", "root", "", "aanwezigheidsdashboard");
 
