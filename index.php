@@ -39,9 +39,6 @@ $target_day_index = array_search($selected_day, $days_of_week);
 $diff = $target_day_index - $day_of_week;
 $selected_date = $today->modify("$diff days")->format('Y-m-d');
 
-// Debug: Controleer de geselecteerde datum
-error_log("Geselecteerde datum: " . $selected_date);
-
 // SQL-query met correcte datum
 $sql = "SELECT t.name AS teacher_name, a.date, a.hour, a.status, a.reason, a.tasks 
         FROM attendance a
@@ -53,9 +50,6 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $selected_date);
 $stmt->execute();
 $result = $stmt->get_result();
-
-// Debug: Controleer het aantal rijen dat is opgehaald
-error_log("Aantal rijen opgehaald: " . $result->num_rows);
 
 $data = [];
 while ($row = $result->fetch_assoc()) {
@@ -198,15 +192,21 @@ $stmt->close();
                 <?php else : ?>
                     <?php foreach ($data as $day => $teachers) : ?>
                         <?php foreach ($teachers as $teacher_name => $lessons) : ?>
-                            <tr>
-                                <td class="fw-bold"><?php echo htmlspecialchars($teacher_name); ?></td>
-                                <?php foreach ($lessons as $lesson) : ?>
+                            <?php 
+                                $first_row = true;
+                                foreach ($lessons as $lesson) : 
+                            ?>
+                                <tr>
+                                    <?php if ($first_row) : ?>
+                                        <td class="fw-bold" rowspan="<?php echo count($lessons); ?>"><?php echo htmlspecialchars($teacher_name); ?></td>
+                                        <?php $first_row = false; ?>
+                                    <?php endif; ?>
                                     <td>Lesuur <?php echo htmlspecialchars($lesson['hour'] ?? ''); ?></td>
                                     <td><?php echo htmlspecialchars($lesson['status'] ?? 'Onbekend'); ?></td>
                                     <td><?php echo htmlspecialchars($lesson['reason'] ?? '-'); ?></td>
                                     <td><?php echo htmlspecialchars($lesson['tasks'] ?? '-'); ?></td>
-                                <?php endforeach; ?>
-                            </tr>
+                                </tr>
+                            <?php endforeach; ?>
                         <?php endforeach; ?>
                     <?php endforeach; ?>
                 <?php endif; ?>
