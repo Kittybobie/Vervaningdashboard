@@ -4,7 +4,13 @@ include 'config.php'; // Zorgt dat de databaseconnectie wordt ingeladen
 <?php
 session_start();
 // Databaseverbinding
-$mysqli = new mysqli("localhost", "root", "", "aanwezigheidsdashboard");
+$host = "bkqrr4fpabrirltwrq38-mysql.services.clever-cloud.com";
+$db   = "bkqrr4fpabrirltwrq38";
+$user = "u9pgwjuq27e3npxv";
+$pass = "xqwOSonP0LnDFUMcqZDN";
+$port = "3306";
+
+$conn = new mysqli($host, $user, $pass, $db, $port);
 if ($mysqli->connect_error) {
     die("Connection failed: " . $mysqli->connect_error);
 }
