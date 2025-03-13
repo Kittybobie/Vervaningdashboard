@@ -42,6 +42,7 @@ $next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 // Haal de gegevens uit POST (of zet standaardwaarden)
 $hour = isset($_POST['hour']) ? (int)$_POST['hour'] : 1; // Standaard naar lesuur 1
 $status = $_POST['status'] ?? 'Onbekend';
@@ -58,6 +59,8 @@ $sql = "SELECT t.id, t.name AS teacher_name, a.hour, a.status, a.reason, a.tasks
 =======
 =======
 >>>>>>> parent of 4fd3f5c (meerdere dagen)
+=======
+>>>>>>> parent of 4fd3f5c (meerdere dagen)
 // SQL-query om de vervangingen op te halen
 $sql = "SELECT t.name AS teacher_name, a.day, a.hour, a.reason, a.tasks, a.status 
         FROM attendance a
@@ -65,6 +68,9 @@ $sql = "SELECT t.name AS teacher_name, a.day, a.hour, a.reason, a.tasks, a.statu
         WHERE a.status IN ('absent', 'meeting') AND a.day = ? 
         ORDER BY a.day, a.hour";
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 4fd3f5c (meerdere dagen)
+=======
 >>>>>>> parent of 4fd3f5c (meerdere dagen)
 =======
 >>>>>>> parent of 4fd3f5c (meerdere dagen)
