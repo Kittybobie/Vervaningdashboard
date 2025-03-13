@@ -179,17 +179,24 @@ $stmt->close();
             <tbody>
                 <?php if (!empty($data)) {
                     foreach ($data as $teacher_name => $lessons) {
-                        $rowspan = count($lessons);
-                        foreach ($lessons as $index => $lesson) {
-                            echo "<tr>";
-                            if ($index === 0) {
-                                echo "<td rowspan='$rowspan' class='fw-bold'>" . htmlspecialchars($teacher_name) . "</td>";
+                        // Filter lessen: Alleen tonen als status "absent" of "meeting" is
+                        $filtered_lessons = array_filter($lessons, function ($lesson) {
+                            return in_array($lesson['status'], ['absent', 'meeting']);
+                        });
+
+                        if (!empty($filtered_lessons)) {
+                            $rowspan = count($filtered_lessons);
+                            foreach ($filtered_lessons as $index => $lesson) {
+                                echo "<tr>";
+                                if ($index === 0) {
+                                    echo "<td rowspan='$rowspan' class='fw-bold'>" . htmlspecialchars($teacher_name ?? '') . "</td>";
+                                }
+                                echo "<td>Lesuur " . htmlspecialchars($lesson['hour'] ?? '') . "</td>";
+                                echo "<td>" . htmlspecialchars($lesson['status'] ?? '') . "</td>";
+                                echo "<td>" . htmlspecialchars($lesson['reason'] ?? '') . "</td>";
+                                echo "<td>" . htmlspecialchars($lesson['tasks'] ?? '') . "</td>";
+                                echo "</tr>";
                             }
-                            echo "<td>Lesuur " . htmlspecialchars($lesson['hour']) . "</td>";
-                            echo "<td>" . htmlspecialchars($lesson['status']) . "</td>";
-                            echo "<td>" . htmlspecialchars($lesson['reason']) . "</td>";
-                            echo "<td>" . htmlspecialchars($lesson['tasks']) . "</td>";
-                            echo "</tr>";
                         }
                     }
                 } else {
