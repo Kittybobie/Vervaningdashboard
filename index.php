@@ -176,33 +176,37 @@
                 </tr>
             </thead>
             <tbody>
-                <?php if (!empty($data)) {
-                    foreach ($data as $teacher_name => $lessons) {
-                        // Filter lessen: Alleen tonen als status "absent" of "meeting" is
-                        $filtered_lessons = array_filter($lessons, function ($lesson) {
-                            return in_array($lesson['status'], ['absent', 'meeting']);
-                        });
+                <?php foreach ($data as $day => $teachers) : ?>
+                    <tr>
+                        <td colspan="5" class="fw-bold text-center bg-light">
+                            <?php echo htmlspecialchars($day); ?>
+                        </td>
+                    </tr>
+                    <?php foreach ($teachers as $teacher_name => $lessons) : ?>
+                        <?php 
+                            $filtered_lessons = array_filter($lessons, function ($lesson) {
+                                return in_array($lesson['status'], ['absent', 'meeting']);
+                            });
 
-                        if (!empty($filtered_lessons)) {
-                            $rowspan = count($filtered_lessons);
-                            $first_row = true;
-                            foreach ($filtered_lessons as $lesson) {
-                                echo "<tr>";
-                                if ($first_row) {
-                                    echo "<td rowspan='$rowspan' class='fw-bold'>" . htmlspecialchars($teacher_name ?? '') . "</td>";
-                                    $first_row = false;
+                            if (!empty($filtered_lessons)) {
+                                $rowspan = count($filtered_lessons);
+                                $first_row = true;
+                                foreach ($filtered_lessons as $lesson) {
+                                    echo "<tr>";
+                                    if ($first_row) {
+                                        echo "<td rowspan='$rowspan' class='fw-bold'>" . htmlspecialchars($teacher_name ?? '') . "</td>";
+                                        $first_row = false;
+                                    }
+                                    echo "<td>Lesuur " . htmlspecialchars($lesson['hour'] ?? '') . "</td>";
+                                    echo "<td>" . htmlspecialchars($lesson['status'] ?? '') . "</td>";
+                                    echo "<td>" . htmlspecialchars($lesson['reason'] ?? '') . "</td>";
+                                    echo "<td>" . htmlspecialchars($lesson['tasks'] ?? '') . "</td>";
+                                    echo "</tr>";
                                 }
-                                echo "<td>Lesuur " . htmlspecialchars($lesson['hour'] ?? '') . "</td>";
-                                echo "<td>" . htmlspecialchars($lesson['status'] ?? '') . "</td>";
-                                echo "<td>" . htmlspecialchars($lesson['reason'] ?? '') . "</td>";
-                                echo "<td>" . htmlspecialchars($lesson['tasks'] ?? '') . "</td>";
-                                echo "</tr>";
                             }
-                        }
-                    }
-                } else {
-                    echo "<tr><td colspan='5' class='empty-message'>Geen vervangingen gevonden.</td></tr>";
-                } ?>
+                        ?>
+                    <?php endforeach; ?>
+                <?php endforeach; ?>
             </tbody>
         </table>
     </div>
