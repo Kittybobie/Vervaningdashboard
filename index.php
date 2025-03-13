@@ -16,23 +16,20 @@
     // Definieer de dagen van de week
     $days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-    // Verkrijg de geselecteerde dag uit de sessie
-    if (!isset($_SESSION['selected_day'])) {
-        $_SESSION['selected_day'] = 'Monday';
+    // Verkrijg de geselecteerde dag uit de sessie en valideer deze
+    if (!isset($_SESSION['selected_day']) || !in_array($_SESSION['selected_day'], $days_of_week)) {
+        $_SESSION['selected_day'] = 'Monday'; // Standaardwaarde instellen als de dag ongeldig is
     }
     $selected_day = $_SESSION['selected_day'];
 
-    // Controleer of er een POST-verzoek is gedaan om de dag te wijzigen
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['day'])) {
+    // Controleer of er een POST-verzoek is gedaan om de dag te wijzigen en valideer deze
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['day']) && in_array($_POST['day'], $days_of_week)) {
         $_SESSION['selected_day'] = $_POST['day'];
         $selected_day = $_POST['day'];
     }
 
     // Zoek de index van de huidige geselecteerde dag
     $current_day_index = array_search($selected_day, $days_of_week);
-    if ($current_day_index === false) {
-        die("Ongeldige dag geselecteerd.");
-    }
 
     $previous_day = $days_of_week[($current_day_index - 1 + count($days_of_week)) % count($days_of_week)];
     $next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
@@ -57,6 +54,7 @@
     }
     $stmt->close();
 ?>
+
 
 
 <!DOCTYPE html>
