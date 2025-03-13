@@ -40,63 +40,39 @@ $current_day_index = array_search($selected_day, $days_of_week);
 $previous_day = $days_of_week[($current_day_index - 1 + count($days_of_week)) % count($days_of_week)];
 $next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 // Haal de gegevens uit POST (of zet standaardwaarden)
 $hour = isset($_POST['hour']) ? (int)$_POST['hour'] : 1; // Standaard naar lesuur 1
 $status = $_POST['status'] ?? 'Onbekend';
 $reason = $_POST['reason'] ?? null; // Reden kan null zijn
 $tasks = $_POST['tasks'] ?? null; // Taken kunnen null zijn
 
-$selected_day = ucfirst(strtolower($_SESSION['selected_day']));
-
-// Haal de gegevens op van de geselecteerde dag
-$sql = "SELECT t.id, t.name AS teacher_name, a.hour, a.status, a.reason, a.tasks 
-        FROM attendance a
-        JOIN teachers t ON a.teacher_id = t.id
-        WHERE LOWER(a.day) = LOWER(?)";
-=======
-=======
->>>>>>> parent of 4fd3f5c (meerdere dagen)
-=======
->>>>>>> parent of 4fd3f5c (meerdere dagen)
 // SQL-query om de vervangingen op te halen
-$sql = "SELECT t.name AS teacher_name, a.day, a.hour, a.reason, a.tasks, a.status 
-        FROM attendance a
-        JOIN teachers t ON a.teacher_id = t.id
-        WHERE a.status IN ('absent', 'meeting') AND a.day = ? 
-        ORDER BY a.day, a.hour";
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> parent of 4fd3f5c (meerdere dagen)
-=======
->>>>>>> parent of 4fd3f5c (meerdere dagen)
-=======
->>>>>>> parent of 4fd3f5c (meerdere dagen)
+$sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
+        VALUES (?, CURDATE(), ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE 
+        day = VALUES(day), 
+        status = VALUES(status), 
+        reason = VALUES(reason), 
+        tasks = VALUES(tasks)";
 
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
     die("Fout bij het voorbereiden van de query: " . $conn->error);
 }
 
-// Bind de geselecteerde dag als parameter
-$stmt->bind_param("s", $selected_day);
-$stmt->execute();
-$result = $stmt->get_result();
+// Bind parameters
+$stmt->bind_param("isssss", $teacher_id, $selected_day, $hour, $status, $reason, $tasks);
 
-// Controleer of er resultaten zijn en verwerk de data
-$data = [];
-while ($row = $result->fetch_assoc()) {
-    $data[$row['teacher_name']][] = $row;
+// Voer de query uit en controleer op fouten
+if (!$stmt->execute()) {
+    die("Fout bij het uitvoeren van de query: " . $stmt->error);
+} else {
+    echo "Gegevens succesvol ingevoegd.";
 }
 
-// **DEBUG** - Laat zien welke dag wordt opgevraagd en welke data wordt opgehaald
-echo "<pre>Geselecteerde dag: $selected_day</pre>";
-echo "<pre>Opgehaalde data: "; print_r($data); echo "</pre>";
-
-// Sluit de statement
+// Sluit de verklaring en de verbinding
 $stmt->close();
+$conn->close();
 ?>
 
 <!DOCTYPE html>
