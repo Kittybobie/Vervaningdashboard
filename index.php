@@ -1,6 +1,7 @@
 <?php
-session_start();
 include __DIR__ . '/config.php';
+include 'config.php';
+session_start();
 
 // Haal een standaard teacher_id uit de database
 $result = $conn->query("SELECT id FROM teachers LIMIT 1");
@@ -12,7 +13,6 @@ $teacher_id = $_SESSION['teacher_id'];
 if (!$teacher_id) {
     die("Fout: Geen leerkracht gevonden in de database.");
 }
-
 
 // Definieer de dagen van de week
 $days_of_week = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag'];
