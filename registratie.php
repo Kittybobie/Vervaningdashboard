@@ -30,8 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($teacher_ids as $index => $leraar_id) {
             // Loop door de 8 lesuren (1 t/m 8)
             for ($hour = 1; $hour <= 8; $hour++) {
-                // Verkrijg de status voor het huidige uur, standaard op 'present' als er geen keuze is
-                $current_status = $status[$leraar_id][$hour] ?? 'present';
+                // Verkrijg de status voor het huidige uur, standaard op 'aanwezig' als er geen keuze is
+                $current_status = $status[$leraar_id][$hour] ?? 'aanwezig';
                 
                 // Verkrijg de reden en taak voor het huidige uur (null als leeg)
                 $current_reden = $_POST['reden'][$leraar_id][$hour] ?? null;
@@ -41,34 +41,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (empty($current_reden)) {
                     $current_reden = NULL;
                 }
-
                 if (empty($current_tasks)) {
                     $current_tasks = NULL;
                 }
                 
-
-                // SQL-query om aanwezigheid in te voegen of bij te werken
-                $sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
-                VALUES (?, CURDATE(), ?, ?, ?, ?, ?) 
-                ON DUPLICATE KEY UPDATE 
-                    day = ?, status = ?, reason = ?, tasks = ?";
-
-                $stmt = $conn->prepare($sql);
-
-                if ($stmt === false) {
-                    error_log("Prepare failed: " . $conn->error);
-                    continue;
+                // Als de status 'aanwezig' is, verwijderen we eventuele bestaande record
+                if ($current_status === 'aanwezig') {
+                    $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND hour = ? AND date = CURDATE()";
+                    $delete_stmt = $conn->prepare($delete_sql);
+                    if ($delete_stmt) {
+                        $delete_stmt->bind_param("isi", $leraar_id, $selected_day, $hour);
+                        $delete_stmt->execute();
+                        $delete_stmt->close();
+                    } else {
+                        error_log("Prepare delete failed: " . $conn->error);
+                    }
+                } else {
+                    // Alleen invoegen of updaten als de status 'afwezig' of 'in vergadering' is
+                    $sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
+                            VALUES (?, CURDATE(), ?, ?, ?, ?, ?) 
+                            ON DUPLICATE KEY UPDATE 
+                                day = ?, status = ?, reason = ?, tasks = ?";
+    
+                    $stmt = $conn->prepare($sql);
+    
+                    if ($stmt === false) {
+                        error_log("Prepare insert/update failed: " . $conn->error);
+                        continue;
+                    }
+    
+                    // Bind de parameters
+                    $stmt->bind_param("isssssssss", $leraar_id, $selected_day, $hour, $current_status, $current_reden, $current_tasks, $selected_day, $current_status, $current_reden, $current_tasks);
+    
+                    // Voer de query uit
+                    if (!$stmt->execute()) {
+                        error_log("Execute failed: " . $stmt->error);
+                    }
+                    $stmt->close();
                 }
-
-                // Bind de parameters
-                $stmt->bind_param("isssssssss", $leraar_id, $selected_day, $hour, $current_status, $current_reden, $current_tasks, $selected_day, $current_status, $current_reden, $current_tasks);
-
-                // Voer de query uit
-                if (!$stmt->execute()) {
-                    error_log("Execute failed: " . $stmt->error);
-                }
-
-
             }
         }
     }
@@ -83,9 +93,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sql_reset_auto_increment = "ALTER TABLE attendance AUTO_INCREMENT = 1";
     // Voer de query uit
     if ($conn->query($sql_reset_auto_increment) === TRUE) {
-        
+        // success
     } else {
-        
+        // failure
     }
 }
 ?>
@@ -105,7 +115,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin: 0;
             padding: 0;
         }
-
         /* Main Container */
         .container {
             max-width: 950px;
@@ -116,7 +125,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
             transition: transform 0.3s ease-in-out;
         }
-
         /* Header */
         h1 {
             text-align: center;
@@ -125,7 +133,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: 700;
             margin-bottom: 15px;
         }
-
         /* Selected Day */
         h2 {
             text-align: center;
@@ -134,7 +141,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: bold;
             margin-bottom: 20px;
         }
-
         /* Buttons Styling */
         button {
             background: #007bff;
@@ -148,12 +154,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: 600;
             box-shadow: 0 3px 8px rgba(0, 123, 255, 0.3);
         }
-
         button:hover {
             background: #0056b3;
             box-shadow: 0 5px 12px rgba(0, 123, 255, 0.4);
         }
-
         /* Day Selection Buttons */
         .btn-day {
             display: inline-block;
@@ -163,7 +167,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-size: 14px;
             border-radius: 8px;
         }
-
         /* Search Input */
         input[type="text"] {
             width: calc(100% - 20px);
@@ -174,12 +177,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-size: 14px;
             transition: border 0.3s ease-in-out;
         }
-
         input[type="text"]:focus {
             border: 2px solid #007bff;
             outline: none;
         }
-
         /* Suggestions Dropdown */
         #suggestions {
             border: 1px solid #ccc;
@@ -191,22 +192,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: calc(100% - 20px);
             margin-top: -60px; /* Adjust to align with input */
         }
-
         .suggestion-item {
             padding: 10px;
             cursor: pointer;
         }
-
         .suggestion-item:hover {
             background-color: #f0f0f0;
         }
-
         /* Search Button */
         .btn-zoeken {
             width: 100%;
             margin-top: 10px;
         }
-
         /* Table Styling */
         table {
             width: 100%;
@@ -216,20 +213,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background: white;
             border-radius: 8px;
             overflow: hidden;
-            table-layout: fixed; /* ✅ Ensures proper width handling */
+            table-layout: fixed;
         }
-
         /* Table Headers */
         th {
             background: #007bff;
             color: white;
             font-weight: bold;
             text-transform: uppercase;
-            text-align: center; /* ✅ Centers header text */
-            display:table-cell;
-            vertical-align: middle; /* ✅ Ensures text is vertically centered */
+            text-align: center;
+            display: table-cell;
+            vertical-align: middle;
         }
-
         /* Table Cells */
         th, td {
             padding: 14px;
@@ -239,15 +234,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             overflow: hidden;
             white-space: nowrap;
         }
-
         /* Name Column Styling */
         td {
             font-weight: bold;
             width: 15%;
-            text-align: center; /* ✅ Centers text horizontally */
-            vertical-align: middle; /* ✅ Centers text vertically */
+            text-align: center;
+            vertical-align: middle;
         }
-
         /* Dropdown and Input Fields */
         select, textarea {
             width: 100%;
@@ -259,8 +252,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background: #FAFAFA;
             color: #333;
         }
-
-        /* ✅ Ensure textareas are inside table cells properly */
         td textarea {
             width: 100%;
             min-height: 40px;
@@ -269,15 +260,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 6px;
             padding: 8px;
             font-size: 14px;
-            box-sizing: border-box; /* ✅ Prevents overflow */
+            box-sizing: border-box;
         }
-
-        /* Focus effect */
         select:focus, textarea:focus {
             border: 2px solid #007bff;
             outline: none;
         }
-
         /* Save Button */
         .btn-primary {
             width: 100%;
@@ -287,18 +275,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: bold;
             border-radius: 8px;
         }
-
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
                 width: 95%;
                 padding: 15px;
             }
-
             .btn-day {
                 width: 45%;
             }
-
             table {
                 font-size: 13px;
             }
@@ -331,7 +316,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" id="teacher_search" name="teacher_name" style="margin-right: 15px; width:97.2%;" placeholder="Zoek leerkracht..." required autocomplete="off">
                 <button type="submit" class="btn-zoeken" name="search">Zoeken</button>
             </form>
-            <div id="suggestions"></div> <!-- Suggestions dropdown -->
+            <div id="suggestions"></div>
         </div>
     <?php endif; ?>
 
@@ -415,5 +400,4 @@ $(document).ready(function() {
 <?php
 // Sluit de databaseverbinding
 $conn->close();
-
 ?>
