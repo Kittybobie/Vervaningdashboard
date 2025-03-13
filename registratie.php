@@ -2,8 +2,8 @@
 include 'config.php'; // Zorgt dat de databaseconnectie wordt ingeladen
 session_start();
 // Databaseverbinding
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 
 // Verwerk formulier indien ingediend
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $conn->prepare($sql);
 
                 if ($stmt === false) {
-                    error_log("Prepare failed: " . $mysqli->error);
+                    error_log("Prepare failed: " . $conn->error);
                     continue;
                 }
 
@@ -76,14 +76,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Zoek leerkrachten
     if (isset($_POST['search'])) {
-        $teacher_name = $mysqli->real_escape_string($_POST['teacher_name']);
+        $teacher_name = $conn->real_escape_string($_POST['teacher_name']);
         $sql = "SELECT * FROM teachers WHERE name LIKE '%$teacher_name%'";
-        $result = $mysqli->query($sql);
+        $result = $conn->query($sql);
     }
 
     $sql_reset_auto_increment = "ALTER TABLE attendance AUTO_INCREMENT = 1";
     // Voer de query uit
-    if ($mysqli->query($sql_reset_auto_increment) === TRUE) {
+    if ($conn->query($sql_reset_auto_increment) === TRUE) {
         
     } else {
         

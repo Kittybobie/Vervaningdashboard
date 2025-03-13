@@ -1,5 +1,9 @@
 <?php
-include 'config.php'; // Zorgt dat de databaseconnectie wordt ingeladen
+include 'config.php';
+if (!isset($conn)) {
+    die("Fout: Databaseverbinding is niet ingesteld.");
+}
+
 session_start();
 
 // Definieer de dagen van de week
@@ -12,9 +16,10 @@ if (!isset($_SESSION['selected_day'])) {
 $selected_day = $_SESSION['selected_day'];
 
 // Databaseverbinding
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
+if ($conn->connect_error) {
+    die("Verbindingsfout: " . $conn->connect_error);
 }
+
 
 // Controleer of er een POST-verzoek is gedaan om de dag te wijzigen
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['day'])) {

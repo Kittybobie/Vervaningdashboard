@@ -2,14 +2,14 @@
 include 'config.php'; // Zorgt dat de databaseconnectie wordt ingeladen
 session_start();
 
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 
 if (isset($_GET['term'])) {
-    $term = $mysqli->real_escape_string($_GET['term']);
+    $term = $conn->real_escape_string($_GET['term']);
     $query = "SELECT name FROM teachers WHERE name LIKE '%$term%' LIMIT 10";
-    $result = $mysqli->query($query);
+    $result = $conn->query($query);
 
     $names = [];
     while ($row = $result->fetch_assoc()) {
