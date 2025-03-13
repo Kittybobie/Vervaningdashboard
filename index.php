@@ -4,8 +4,7 @@ include 'config.php';
 if (!isset($conn)) {
     die("Fout: Databaseverbinding is niet ingesteld.");
 }
-var_dump($teacher_id);
-exit;
+
 session_start();
 
 // Definieer de dagen van de week
@@ -45,7 +44,7 @@ $sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tas
         reason = VALUES(reason), 
         tasks = VALUES(tasks)";
 
-
+var_dump($teacher_id);
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ssssss", $teacher_id, $selected_day, $hour, $status, $reason, $tasks);
 $stmt->execute();
