@@ -32,24 +32,41 @@
     $previous_day = $days_of_week[($current_day_index - 1 + count($days_of_week)) % count($days_of_week)];
     $next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
 
+    $selected_date = date('Y-m-d', strtotime("this week $selected_day"));
+
     $sql = "SELECT t.name AS teacher_name, a.date, a.hour, a.status, a.reason, a.tasks 
     FROM attendance a
     JOIN teachers t ON a.teacher_id = t.id
     WHERE a.date = ?
     ORDER BY a.hour ASC";
 
+    // DEBUG CODE TOEGEVOEGD HIER
+    echo "<pre>DEBUG INFO:\n";
+    echo "Selected Day: " . htmlspecialchars($selected_day) . "\n";
+    echo "Selected Date: " . htmlspecialchars($selected_date) . "\n";
+    echo "SQL Query: " . $sql . "\n";
+    echo "Parameter: " . $selected_date . "\n";
+    echo "</pre>";
+
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $selected_date);
     $stmt->execute();
     $result = $stmt->get_result();
 
+    // DEBUG CODE TOEGEVOEGD HIER
+    if ($result->num_rows === 0) {
+        echo "<pre>DEBUG INFO:\nGeen resultaten gevonden voor de geselecteerde dag.\n</pre>";
+    } else {
+        echo "<pre>DEBUG INFO:\nAantal resultaten: " . $result->num_rows . "\n</pre>";
+    }
+
     $data = [];
     while ($row = $result->fetch_assoc()) {
-    $data[$row['date']][$row['teacher_name']][] = $row;
+        $data[$row['date']][$row['teacher_name']][] = $row;
     }
     $stmt->close();
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="nl">
