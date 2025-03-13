@@ -55,6 +55,8 @@
     while ($row = $result->fetch_assoc()) {
         $data[$row['date']][$row['teacher_name']][] = $row;
     }
+    var_dump($selected_date);
+    var_dump($teacher_id);
     $stmt->close();
 ?>
 
