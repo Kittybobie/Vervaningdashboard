@@ -1,63 +1,68 @@
 <?php
-    include 'config.php';
-    include __DIR__ . "/config.php";
-    session_start();
+include 'config.php';
+session_start();
 
-    // Haal een standaard teacher_id uit de database
-    $result = $conn->query("SELECT id FROM teachers LIMIT 1");
-    $row = $result->fetch_assoc();
-    $_SESSION['teacher_id'] = $row['id'] ?? null;
-    $teacher_id = $_SESSION['teacher_id'];
+// Haal een standaard teacher_id uit de database
+$result = $conn->query("SELECT id FROM teachers LIMIT 1");
+$row = $result->fetch_assoc();
+$_SESSION['teacher_id'] = $row['id'] ?? null;
+$teacher_id = $_SESSION['teacher_id'];
 
-    if (!$teacher_id) {
-        die("Fout: Geen leerkracht gevonden in de database.");
-    }
+if (!$teacher_id) {
+    die("Fout: Geen leerkracht gevonden in de database.");
+}
 
-    // Definieer de dagen van de week
-    $days_of_week = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag'];
+// Definieer de dagen van de week
+$days_of_week = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag'];
 
-    // Verkrijg de geselecteerde dag uit de sessie
-    if (!isset($_SESSION['selected_day'])) {
-        $_SESSION['selected_day'] = 'Maandag';
-    }
-    $selected_day = $_SESSION['selected_day'];
+// Verkrijg de geselecteerde dag uit de sessie
+if (!isset($_SESSION['selected_day'])) {
+    $_SESSION['selected_day'] = 'Maandag';
+}
+$selected_day = $_SESSION['selected_day'];
 
-    // Controleer of er een POST-verzoek is gedaan om de dag te wijzigen
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['day'])) {
-        $_SESSION['selected_day'] = $_POST['day'];
-        $selected_day = $_POST['day'];
-    }
+// Controleer of er een POST-verzoek is gedaan om de dag te wijzigen
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['day'])) {
+    $_SESSION['selected_day'] = $_POST['day'];
+    $selected_day = $_POST['day'];
+}
 
-    // Zoek de index van de huidige geselecteerde dag
-    $current_day_index = array_search($selected_day, $days_of_week);
-    $previous_day = $days_of_week[($current_day_index - 1 + count($days_of_week)) % count($days_of_week)];
-    $next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
+// Zoek de index van de huidige geselecteerde dag
+$current_day_index = array_search($selected_day, $days_of_week);
+$previous_day = $days_of_week[($current_day_index - 1 + count($days_of_week)) % count($days_of_week)];
+$next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
 
-    // Converteer de geselecteerde dag naar een datum van deze week
-    $today = new DateTime();
-    $day_of_week = $today->format('N') - 1; // 0 = Maandag, 4 = Vrijdag
-    $target_day_index = array_search($selected_day, $days_of_week);
-    $diff = $target_day_index - $day_of_week;
-    $selected_date = $today->modify("$diff days")->format('Y-m-d');
+// Converteer de geselecteerde dag naar een datum van deze week
+$today = new DateTime();
+$day_of_week = $today->format('N') - 1; // 0 = Maandag, 4 = Vrijdag
+$target_day_index = array_search($selected_day, $days_of_week);
+$diff = $target_day_index - $day_of_week;
+$selected_date = $today->modify("$diff days")->format('Y-m-d');
 
-    // SQL-query met correcte datum
-    $sql = "SELECT t.name AS teacher_name, a.date, a.hour, a.status, a.reason, a.tasks 
-    FROM attendance a
-    JOIN teachers t ON a.teacher_id = t.id
-    WHERE a.date = ?
-    ORDER BY a.hour ASC";
+// Debug: Controleer de geselecteerde datum
+error_log("Geselecteerde datum: " . $selected_date);
 
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $selected_date);
-    $stmt->execute();
-    $result = $stmt->get_result();
+// SQL-query met correcte datum
+$sql = "SELECT t.name AS teacher_name, a.date, a.hour, a.status, a.reason, a.tasks 
+        FROM attendance a
+        JOIN teachers t ON a.teacher_id = t.id
+        WHERE a.date = ?
+        ORDER BY a.hour ASC";
 
-    $data = [];
-    while ($row = $result->fetch_assoc()) {
-        $data[$row['date']][$row['teacher_name']][] = $row;
-    }
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $selected_date);
+$stmt->execute();
+$result = $stmt->get_result();
 
-    $stmt->close();
+// Debug: Controleer het aantal rijen dat is opgehaald
+error_log("Aantal rijen opgehaald: " . $result->num_rows);
+
+$data = [];
+while ($row = $result->fetch_assoc()) {
+    $data[$row['date']][$row['teacher_name']][] = $row;
+}
+
+$stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -186,32 +191,25 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($data as $day => $teachers) : ?>
-                    <?php foreach ($teachers as $teacher_name => $lessons) : ?>
-                        <?php 
-                            $filtered_lessons = array_filter($lessons, function ($lesson) {
-                                return in_array($lesson['status'], ['absent', 'meeting']);
-                            });
-
-                            if (!empty($filtered_lessons)) {
-                                $rowspan = count($filtered_lessons);
-                                $first_row = true;
-                                foreach ($filtered_lessons as $lesson) {
-                                    echo "<tr>";
-                                    if ($first_row) {
-                                        echo "<td rowspan='$rowspan' class='fw-bold'>" . htmlspecialchars($teacher_name ?? '') . "</td>";
-                                        $first_row = false;
-                                    }
-                                    echo "<td>Lesuur " . htmlspecialchars($lesson['hour'] ?? '') . "</td>";
-                                    echo "<td>" . htmlspecialchars($lesson['status'] ?? '') . "</td>";
-                                    echo "<td>" . htmlspecialchars($lesson['reason'] ?? '') . "</td>";
-                                    echo "<td>" . htmlspecialchars($lesson['tasks'] ?? '') . "</td>";
-                                    echo "</tr>";
-                                }
-                            }
-                        ?>
+                <?php if (empty($data)) : ?>
+                    <tr>
+                        <td colspan="5" class="empty-message">Geen vervangingen vandaag</td>
+                    </tr>
+                <?php else : ?>
+                    <?php foreach ($data as $day => $teachers) : ?>
+                        <?php foreach ($teachers as $teacher_name => $lessons) : ?>
+                            <tr>
+                                <td class="fw-bold"><?php echo htmlspecialchars($teacher_name); ?></td>
+                                <?php foreach ($lessons as $lesson) : ?>
+                                    <td>Lesuur <?php echo htmlspecialchars($lesson['hour'] ?? ''); ?></td>
+                                    <td><?php echo htmlspecialchars($lesson['status'] ?? 'Onbekend'); ?></td>
+                                    <td><?php echo htmlspecialchars($lesson['reason'] ?? '-'); ?></td>
+                                    <td><?php echo htmlspecialchars($lesson['tasks'] ?? '-'); ?></td>
+                                <?php endforeach; ?>
+                            </tr>
+                        <?php endforeach; ?>
                     <?php endforeach; ?>
-                <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
