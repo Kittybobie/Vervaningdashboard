@@ -46,11 +46,13 @@ $status = $_POST['status'] ?? 'Onbekend';
 $reason = $_POST['reason'] ?? null; // Reden kan null zijn
 $tasks = $_POST['tasks'] ?? null; // Taken kunnen null zijn
 
+$selected_day = ucfirst(strtolower($_SESSION['selected_day']));
+
 // Haal de gegevens op van de geselecteerde dag
 $sql = "SELECT t.id, t.name AS teacher_name, a.hour, a.status, a.reason, a.tasks 
         FROM attendance a
         JOIN teachers t ON a.teacher_id = t.id
-        WHERE a.day = ?";
+        WHERE LOWER(a.day) = LOWER(?)";
 
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
@@ -63,14 +65,14 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 // Controleer of er resultaten zijn en verwerk de data
-if ($result->num_rows > 0) {
-    $data = [];
-    while ($row = $result->fetch_assoc()) {
-        $data[$row['teacher_name']][] = $row;
-    }
-} else {
-    $data = [];
+$data = [];
+while ($row = $result->fetch_assoc()) {
+    $data[$row['teacher_name']][] = $row;
 }
+
+// **DEBUG** - Laat zien welke dag wordt opgevraagd en welke data wordt opgehaald
+echo "<pre>Geselecteerde dag: $selected_day</pre>";
+echo "<pre>Opgehaalde data: "; print_r($data); echo "</pre>";
 
 // Sluit de statement
 $stmt->close();
