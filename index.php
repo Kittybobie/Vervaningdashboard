@@ -4,20 +4,21 @@
 
     // Haal een standaard teacher_id uit de database
     $result = $conn->query("SELECT id FROM teachers LIMIT 1");
-    $row = $result->fetch_assoc();
-    $_SESSION['teacher_id'] = $row['id'] ?? null;
-    $teacher_id = $_SESSION['teacher_id'];
+    if ($result && $row = $result->fetch_assoc()) {
+        $_SESSION['teacher_id'] = $row['id'];
+    }
+    $teacher_id = $_SESSION['teacher_id'] ?? null;
 
     if (!$teacher_id) {
         die("Fout: Geen leerkracht gevonden in de database.");
     }
 
     // Definieer de dagen van de week
-    $days_of_week = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag'];
+    $days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
     // Verkrijg de geselecteerde dag uit de sessie
     if (!isset($_SESSION['selected_day'])) {
-        $_SESSION['selected_day'] = 'Maandag';
+        $_SESSION['selected_day'] = 'Monday';
     }
     $selected_day = $_SESSION['selected_day'];
 
@@ -29,17 +30,21 @@
 
     // Zoek de index van de huidige geselecteerde dag
     $current_day_index = array_search($selected_day, $days_of_week);
+    if ($current_day_index === false) {
+        die("Ongeldige dag geselecteerd.");
+    }
+
     $previous_day = $days_of_week[($current_day_index - 1 + count($days_of_week)) % count($days_of_week)];
     $next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
 
-    $selected_date = date('Y-m-d', strtotime("this week $selected_day"));
+    // Bereken de correcte datum
+    $selected_date = date('Y-m-d', strtotime("Monday this week +{$current_day_index} days"));
 
     $sql = "SELECT t.name AS teacher_name, a.date, a.hour, a.status, a.reason, a.tasks 
     FROM attendance a
     JOIN teachers t ON a.teacher_id = t.id
     WHERE a.date = ? AND a.status = 'aanwezig, in vergadering'
     ORDER BY a.hour ASC";
-
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $selected_date);
@@ -48,11 +53,11 @@
 
     $data = [];
     while ($row = $result->fetch_assoc()) {
-    $data[$row['date']][$row['teacher_name']][] = $row;
+        $data[$row['date']][$row['teacher_name']][] = $row;
     }
     $stmt->close();
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="nl">
