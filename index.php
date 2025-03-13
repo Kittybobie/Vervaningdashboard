@@ -32,23 +32,22 @@
     $previous_day = $days_of_week[($current_day_index - 1 + count($days_of_week)) % count($days_of_week)];
     $next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
 
-    // Haal gegevens uit de database voor de geselecteerde dag
     $sql = "SELECT t.name AS teacher_name, a.day, a.hour, a.status, a.reason, a.tasks 
-        FROM attendance a
-        JOIN teachers t ON a.teacher_id = t.id
-        WHERE a.teacher_id = ?
-        ORDER BY a.day, a.hour ASC";
+    FROM attendance a
+    JOIN teachers t ON a.teacher_id = t.id
+    WHERE a.day = ?
+    ORDER BY a.hour ASC";
 
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $teacher_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $selected_day);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    $data = [];
-    while ($row = $result->fetch_assoc()) {
+        $data = [];
+        while ($row = $result->fetch_assoc()) {
         $data[$row['day']][$row['teacher_name']][] = $row;
-    }
-    $stmt->close();
+        }
+        $stmt->close();
 ?>
 
 <!DOCTYPE html>
