@@ -37,7 +37,7 @@
     $sql = "SELECT t.name AS teacher_name, a.date, a.hour, a.status, a.reason, a.tasks 
     FROM attendance a
     JOIN teachers t ON a.teacher_id = t.id
-    WHERE a.date = ? AND a.status = 'absent, meeting'
+    WHERE a.date = ? AND a.status = 'aanwezig, in vergadering'
     ORDER BY a.hour ASC";
 
 

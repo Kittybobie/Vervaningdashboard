@@ -356,9 +356,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <input type='hidden' name='leraar_id[]' value='<?php echo htmlspecialchars($teacher['id']); ?>'>
                             <td>
                                 <select name='status[<?php echo $teacher['id']; ?>][<?php echo $hour; ?>]' required>
-                                    <option value='present'>Aanwezig</option>
-                                    <option value='absent'>Afwezig</option>
-                                    <option value='meeting'>In vergadering</option>
+                                    <option value='aanwezig'>Aanwezig</option>
+                                    <option value='afwezig'>Afwezig</option>
+                                    <option value='in vergadering'>In vergadering</option>
                                 </select>
                             </td>
                             <td>
