@@ -4,7 +4,8 @@ include 'config.php';
 if (!isset($conn)) {
     die("Fout: Databaseverbinding is niet ingesteld.");
 }
-
+var_dump($teacher_id);
+exit;
 session_start();
 
 // Definieer de dagen van de week
