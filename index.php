@@ -46,36 +46,34 @@ $status = $_POST['status'] ?? 'Onbekend';
 $reason = $_POST['reason'] ?? null; // Reden kan null zijn
 $tasks = $_POST['tasks'] ?? null; // Taken kunnen null zijn
 
-// SQL-query om de vervangingen op te halen
-$sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
-        VALUES (?, CURDATE(), ?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE 
-        day = VALUES(day), 
-        status = VALUES(status), 
-        reason = VALUES(reason), 
-        tasks = VALUES(tasks)";
-
-// Debugging output
-var_dump($teacher_id, $hour, $status, $reason, $tasks);
+// Haal de gegevens op van de geselecteerde dag
+$sql = "SELECT t.id, t.name AS teacher_name, a.hour, a.status, a.reason, a.tasks 
+        FROM attendance a
+        JOIN teachers t ON a.teacher_id = t.id
+        WHERE a.day = ?";
 
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
     die("Fout bij het voorbereiden van de query: " . $conn->error);
 }
 
-// Bind parameters
-$stmt->bind_param("isssss", $teacher_id, $selected_day, $hour, $status, $reason, $tasks);
+// Bind de geselecteerde dag als parameter
+$stmt->bind_param("s", $selected_day);
+$stmt->execute();
+$result = $stmt->get_result();
 
-// Voer de query uit en controleer op fouten
-if (!$stmt->execute()) {
-    die("Fout bij het uitvoeren van de query: " . $stmt->error);
+// Controleer of er resultaten zijn en verwerk de data
+if ($result->num_rows > 0) {
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[$row['teacher_name']][] = $row;
+    }
 } else {
-    echo "Gegevens succesvol ingevoegd.";
+    $data = [];
 }
 
-// Sluit de verklaring en de verbinding
+// Sluit de statement
 $stmt->close();
-$conn->close();
 ?>
 
 <!DOCTYPE html>
