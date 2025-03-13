@@ -37,8 +37,9 @@
     $sql = "SELECT t.name AS teacher_name, a.date, a.hour, a.status, a.reason, a.tasks 
     FROM attendance a
     JOIN teachers t ON a.teacher_id = t.id
-    WHERE a.date = ?
+    WHERE a.date = ? AND a.status = 'absent, meeting'
     ORDER BY a.hour ASC";
+
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $selected_date);
