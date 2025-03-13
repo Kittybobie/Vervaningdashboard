@@ -68,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     error_log("Execute failed: " . $stmt->error);
                 }
 
-                $conn->close();
 
             }
         }
