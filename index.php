@@ -1,54 +1,54 @@
 <?php
-include 'config.php';
-session_start();
+    include 'config.php';
+    session_start();
 
-// Haal een standaard teacher_id uit de database
-$result = $conn->query("SELECT id FROM teachers LIMIT 1");
-$row = $result->fetch_assoc();
-$_SESSION['teacher_id'] = $row['id'] ?? null;
-$teacher_id = $_SESSION['teacher_id'];
+    // Haal een standaard teacher_id uit de database
+    $result = $conn->query("SELECT id FROM teachers LIMIT 1");
+    $row = $result->fetch_assoc();
+    $_SESSION['teacher_id'] = $row['id'] ?? null;
+    $teacher_id = $_SESSION['teacher_id'];
 
-if (!$teacher_id) {
-    die("Fout: Geen leerkracht gevonden in de database.");
-}
+    if (!$teacher_id) {
+        die("Fout: Geen leerkracht gevonden in de database.");
+    }
 
-// Definieer de dagen van de week
-$days_of_week = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag'];
+    // Definieer de dagen van de week
+    $days_of_week = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag'];
 
-// Verkrijg de geselecteerde dag uit de sessie
-if (!isset($_SESSION['selected_day'])) {
-    $_SESSION['selected_day'] = 'Maandag';
-}
-$selected_day = $_SESSION['selected_day'];
+    // Verkrijg de geselecteerde dag uit de sessie
+    if (!isset($_SESSION['selected_day'])) {
+        $_SESSION['selected_day'] = 'Maandag';
+    }
+    $selected_day = $_SESSION['selected_day'];
 
-// Controleer of er een POST-verzoek is gedaan om de dag te wijzigen
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['day'])) {
-    $_SESSION['selected_day'] = $_POST['day'];
-    $selected_day = $_POST['day'];
-}
+    // Controleer of er een POST-verzoek is gedaan om de dag te wijzigen
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['day'])) {
+        $_SESSION['selected_day'] = $_POST['day'];
+        $selected_day = $_POST['day'];
+    }
 
-// Zoek de index van de huidige geselecteerde dag
-$current_day_index = array_search($selected_day, $days_of_week);
-$previous_day = $days_of_week[($current_day_index - 1 + count($days_of_week)) % count($days_of_week)];
-$next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
+    // Zoek de index van de huidige geselecteerde dag
+    $current_day_index = array_search($selected_day, $days_of_week);
+    $previous_day = $days_of_week[($current_day_index - 1 + count($days_of_week)) % count($days_of_week)];
+    $next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
 
-// Haal gegevens uit de database voor de geselecteerde dag
-$sql = "SELECT t.name AS teacher_name, a.hour, a.status, a.reason, a.tasks 
+    // Haal gegevens uit de database voor de geselecteerde dag
+    $sql = "SELECT t.name AS teacher_name, a.day, a.hour, a.status, a.reason, a.tasks 
         FROM attendance a
         JOIN teachers t ON a.teacher_id = t.id
-        WHERE a.day = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $selected_day);
-$stmt->execute();
-$result = $stmt->get_result();
+        WHERE a.teacher_id = ?
+        ORDER BY a.day, a.hour ASC";
 
-// Verwerk de resultaten in een array
-$data = [];
-while ($row = $result->fetch_assoc()) {
-    $data[$row['teacher_name']][] = $row;
-}
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $teacher_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-$stmt->close();
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[$row['day']][$row['teacher_name']][] = $row;
+    }
+    $stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -177,34 +177,39 @@ $stmt->close();
                 </tr>
             </thead>
             <tbody>
-                <?php if (!empty($data)) {
-                    foreach ($data as $teacher_name => $lessons) {
-                        // Filter lessen: Alleen tonen als status "absent" of "meeting" is
-                        $filtered_lessons = array_filter($lessons, function ($lesson) {
-                            return in_array($lesson['status'], ['absent', 'meeting']);
-                        });
+                <?php foreach ($data as $day => $teachers) : ?>
+                    <tr>
+                        <td colspan="5" class="fw-bold text-center bg-light">
+                            <?php echo htmlspecialchars($day); ?>
+                        </td>
+                    </tr>
+                    <?php foreach ($teachers as $teacher_name => $lessons) : ?>
+                        <?php 
+                            $filtered_lessons = array_filter($lessons, function ($lesson) {
+                                return in_array($lesson['status'], ['absent', 'meeting']);
+                            });
 
-                        if (!empty($filtered_lessons)) {
-                            $rowspan = count($filtered_lessons);
-                            $first_row = true;
-                            foreach ($filtered_lessons as $lesson) {
-                                echo "<tr>";
-                                if ($first_row) {
-                                    echo "<td rowspan='$rowspan' class='fw-bold'>" . htmlspecialchars($teacher_name ?? '') . "</td>";
-                                    $first_row = false;
+                            if (!empty($filtered_lessons)) {
+                                $rowspan = count($filtered_lessons);
+                                $first_row = true;
+                                foreach ($filtered_lessons as $lesson) {
+                                    echo "<tr>";
+                                    if ($first_row) {
+                                        echo "<td rowspan='$rowspan' class='fw-bold'>" . htmlspecialchars($teacher_name ?? '') . "</td>";
+                                        $first_row = false;
+                                    }
+                                    echo "<td>Lesuur " . htmlspecialchars($lesson['hour'] ?? '') . "</td>";
+                                    echo "<td>" . htmlspecialchars($lesson['status'] ?? '') . "</td>";
+                                    echo "<td>" . htmlspecialchars($lesson['reason'] ?? '') . "</td>";
+                                    echo "<td>" . htmlspecialchars($lesson['tasks'] ?? '') . "</td>";
+                                    echo "</tr>";
                                 }
-                                echo "<td>Lesuur " . htmlspecialchars($lesson['hour'] ?? '') . "</td>";
-                                echo "<td>" . htmlspecialchars($lesson['status'] ?? '') . "</td>";
-                                echo "<td>" . htmlspecialchars($lesson['reason'] ?? '') . "</td>";
-                                echo "<td>" . htmlspecialchars($lesson['tasks'] ?? '') . "</td>";
-                                echo "</tr>";
                             }
-                        }
-                    }
-                } else {
-                    echo "<tr><td colspan='5' class='empty-message'>Geen vervangingen gevonden.</td></tr>";
-                } ?>
+                        ?>
+                    <?php endforeach; ?>
+                <?php endforeach; ?>
             </tbody>
+
         </table>
     </div>
 </div>
