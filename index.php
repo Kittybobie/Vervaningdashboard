@@ -1,8 +1,5 @@
 <?php
 include 'config.php'; // Zorgt dat de databaseconnectie wordt ingeladen
-?>
-
-<?php
 session_start();
 
 // Definieer de dagen van de week
@@ -15,13 +12,6 @@ if (!isset($_SESSION['selected_day'])) {
 $selected_day = $_SESSION['selected_day'];
 
 // Databaseverbinding
-$host = "bkqrr4fpabrirltwrq38-mysql.services.clever-cloud.com";
-$db   = "bkqrr4fpabrirltwrq38";
-$user = "u9pgwjuq27e3npxv";
-$pass = "xqwOSonP0LnDFUMcqZDN";
-$port = "3306";
-
-$conn = new mysqli($host, $user, $pass, $db, $port);
 if ($mysqli->connect_error) {
     die("Connection failed: " . $mysqli->connect_error);
 }
@@ -46,7 +36,7 @@ $sql = "SELECT t.name AS teacher_name, a.day, a.hour, a.reason, a.tasks, a.statu
         WHERE a.status IN ('absent', 'meeting') AND a.day = ? 
         ORDER BY a.day, a.hour";
 
-$stmt = $mysqli->prepare($sql);
+$stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $selected_day);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -237,5 +227,5 @@ $result = $stmt->get_result();
 </html>
 
 <?php
-$mysqli->close();
+$conn->close();
 ?>
