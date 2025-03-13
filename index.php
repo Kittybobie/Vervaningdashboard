@@ -28,7 +28,6 @@ if ($conn->connect_error) {
     die("Verbindingsfout: " . $conn->connect_error);
 }
 
-
 // Controleer of er een POST-verzoek is gedaan om de dag te wijzigen
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['day'])) {
     $_SESSION['selected_day'] = $_POST['day'];
@@ -42,6 +41,17 @@ $current_day_index = array_search($selected_day, $days_of_week);
 $previous_day = $days_of_week[($current_day_index - 1 + count($days_of_week)) % count($days_of_week)];
 $next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
 
+// Haal de gegevens uit POST (of zet standaardwaarden)
+$hour = $_POST['hour'] ?? 1; // Standaard naar lesuur 1
+$status = $_POST['status'] ?? 'Onbekend';
+$reason = $_POST['reason'] ?? 'Geen reden opgegeven';
+$tasks = $_POST['tasks'] ?? 'Geen taken opgegeven';
+
+// Controleer of hour correct is
+if ($hour === null) {
+    die("Fout: Lesuur (hour) is niet ingesteld.");
+}
+
 // SQL-query om de vervangingen op te halen
 $sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
         VALUES (?, CURDATE(), ?, ?, ?, ?, ?)
@@ -51,7 +61,7 @@ $sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tas
         reason = VALUES(reason), 
         tasks = VALUES(tasks)";
 
-var_dump($teacher_id);
+var_dump($teacher_id, $hour, $status, $reason, $tasks);
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("isssss", $teacher_id, $selected_day, $hour, $status, $reason, $tasks);
 $stmt->execute();
