@@ -6,6 +6,7 @@ if (!isset($conn)) {
 }
 
 session_start();
+$teacher_id = $_SESSION['teacher_id'] ?? null;
 
 // Definieer de dagen van de week
 $days_of_week = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag'];
@@ -46,9 +47,8 @@ $sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tas
 
 var_dump($teacher_id);
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ssssss", $teacher_id, $selected_day, $hour, $status, $reason, $tasks);
+$stmt->bind_param("isssss", $teacher_id, $selected_day, $hour, $status, $reason, $tasks);
 $stmt->execute();
-$result = $stmt->get_result();
 ?>
 
 <!DOCTYPE html>
