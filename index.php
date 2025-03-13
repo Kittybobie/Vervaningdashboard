@@ -179,36 +179,29 @@
                 </tr>
             </thead>
             <tbody>
-            <?php if (empty($data)) : ?>
+                <?php if (empty($data)) : ?>
                     <tr>
                         <td colspan="5" class="empty-message">Geen vervangingen vandaag</td>
                     </tr>
-                <?php foreach ($data as $day => $teachers) : ?>
-                    <?php foreach ($teachers as $teacher_name => $lessons) : ?>
-                        <?php 
-                            $filtered_lessons = array_filter($lessons, function ($lesson) {
-                                return in_array($lesson['status'], ['absent', 'meeting']);
-                            });
-
-                            if (!empty($filtered_lessons)) {
-                                $rowspan = count($filtered_lessons);
-                                $first_row = true;
-                                foreach ($filtered_lessons as $lesson) {
-                                    echo "<tr>";
-                                    if ($first_row) {
-                                        echo "<td rowspan='$rowspan' class='fw-bold'>" . htmlspecialchars($teacher_name ?? '') . "</td>";
-                                        $first_row = false;
-                                    }
-                                    echo "<td>Lesuur " . htmlspecialchars($lesson['hour'] ?? '') . "</td>";
-                                    echo "<td>" . htmlspecialchars($lesson['status'] ?? '') . "</td>";
-                                    echo "<td>" . htmlspecialchars($lesson['reason'] ?? '') . "</td>";
-                                    echo "<td>" . htmlspecialchars($lesson['tasks'] ?? '') . "</td>";
-                                    echo "</tr>";
-                                }
-                            }
-                        ?>
+                <?php else : ?>
+                    <?php foreach ($data as $day => $teachers) : ?>
+                        <?php foreach ($teachers as $teacher_name => $lessons) : ?>
+                            <tr>
+                                <td class="fw-bold"><?php echo htmlspecialchars($teacher_name); ?></td>
+                                <?php if (empty($lessons)) : ?>
+                                    <td colspan="4" class="text-success">Geen gegevens beschikbaar</td>
+                                <?php else : ?>
+                                    <?php foreach ($lessons as $lesson) : ?>
+                                        <td>Lesuur <?php echo htmlspecialchars($lesson['hour'] ?? ''); ?></td>
+                                        <td><?php echo htmlspecialchars($lesson['status'] ?? 'Onbekend'); ?></td>
+                                        <td><?php echo htmlspecialchars($lesson['reason'] ?? '-'); ?></td>
+                                        <td><?php echo htmlspecialchars($lesson['tasks'] ?? '-'); ?></td>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tr>
+                        <?php endforeach; ?>
                     <?php endforeach; ?>
-                <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
