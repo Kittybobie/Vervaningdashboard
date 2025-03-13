@@ -1,16 +1,18 @@
 <?php
-$host = "bkqrr4fpabrirltwrq38-mysql.services.clever-cloud.com"; 
-$user = "u9pgwjuq27e3npxv";
-$password = "xqwOSonP0LnDFUMcqZDN";
-$database = "bkqrr4fpabrirltwrq38";
-$port = 3306;
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-$conn = new mysqli($host, $user, $password, $database, $port);
+$host = "bkqrr4fpabrirltwrq38-mysql.services.clever-cloud.com";
+$db   = "bkqrr4fpabrirltwrq38";
+$user = "u9pgwjuq27e3npxv";
+$pass = "xqwOSonP0LnDFUMcqZDN";
+$port = "3306";
+
+$conn = new mysqli($host, $user, $pass, $db, $port);
 
 if ($conn->connect_error) {
     die("Verbinding mislukt: " . $conn->connect_error);
+} else {
+    echo "Databaseverbinding geslaagd!";
 }
-
-// Zet de juiste tekenset voor de verbinding
-$conn->set_charset("utf8mb4");
 ?>
