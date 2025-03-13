@@ -12,7 +12,5 @@ $conn = new mysqli($host, $user, $pass, $db, $port);
 
 if ($conn->connect_error) {
     die("Verbinding mislukt: " . $conn->connect_error);
-} else {
-    echo "Databaseverbinding geslaagd!";
 }
 ?>

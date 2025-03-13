@@ -1,4 +1,5 @@
 <?php
+include __DIR__ . '/config.php';
 include 'config.php';
 if (!isset($conn)) {
     die("Fout: Databaseverbinding is niet ingesteld.");
