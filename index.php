@@ -1,6 +1,5 @@
 <?php
 include __DIR__ . '/config.php';
-include 'config.php';
 session_start();
 
 // Haal een standaard teacher_id uit de database
@@ -42,15 +41,10 @@ $previous_day = $days_of_week[($current_day_index - 1 + count($days_of_week)) % 
 $next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
 
 // Haal de gegevens uit POST (of zet standaardwaarden)
-$hour = $_POST['hour'] ?? 1; // Standaard naar lesuur 1
+$hour = isset($_POST['hour']) ? (int)$_POST['hour'] : 1; // Standaard naar lesuur 1
 $status = $_POST['status'] ?? 'Onbekend';
-$reason = $_POST['reason'] ?? 'Geen reden opgegeven';
-$tasks = $_POST['tasks'] ?? 'Geen taken opgegeven';
-
-// Controleer of hour correct is
-if ($hour === null) {
-    die("Fout: Lesuur (hour) is niet ingesteld.");
-}
+$reason = $_POST['reason'] ?? null; // Reden kan null zijn
+$tasks = $_POST['tasks'] ?? null; // Taken kunnen null zijn
 
 // SQL-query om de vervangingen op te halen
 $sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
@@ -61,10 +55,27 @@ $sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tas
         reason = VALUES(reason), 
         tasks = VALUES(tasks)";
 
+// Debugging output
 var_dump($teacher_id, $hour, $status, $reason, $tasks);
+
 $stmt = $conn->prepare($sql);
+if (!$stmt) {
+    die("Fout bij het voorbereiden van de query: " . $conn->error);
+}
+
+// Bind parameters
 $stmt->bind_param("isssss", $teacher_id, $selected_day, $hour, $status, $reason, $tasks);
-$stmt->execute();
+
+// Voer de query uit en controleer op fouten
+if (!$stmt->execute()) {
+    die("Fout bij het uitvoeren van de query: " . $stmt->error);
+} else {
+    echo "Gegevens succesvol ingevoegd.";
+}
+
+// Sluit de verklaring en de verbinding
+$stmt->close();
+$conn->close();
 ?>
 
 <!DOCTYPE html>
