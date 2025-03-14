@@ -162,17 +162,19 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
             box-shadow: 0 5px 12px rgba(0, 123, 255, 0.4);
         }
         /* Day Selection Buttons */
+        .day-selection {
+            display: flex;
+            justify-content: center; /* Centraal uitlijnen */
+            gap: 10px; /* Ruimte tussen de knoppen */
+            margin-bottom: 15px;
+        }
+
         .btn-day {
-            background-color: #007bff;
-            color: white;
-            border: none;
             padding: 12px 20px;
-            border-radius: 6px;
-            cursor: pointer;
             font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
             transition: all 0.3s ease-in-out;
-            font-weight: 600;
-            box-shadow: 0 3px 8px rgba(0, 123, 255, 0.3);
         }
 
         .btn-day:hover {
@@ -181,12 +183,13 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
         }
 
         .active-day {
-            background-color: #ffcc00 !important;
+            background-color: #00fffb !important;
             color: black !important;
             font-weight: bold;
             border: 2px solid #ff9900;
             box-shadow: 0 3px 12px rgba(255, 204, 0, 0.6);
         }
+
         /* Search Input */
         input[type="text"] {
             width: calc(100% - 20px);
@@ -315,14 +318,17 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
 <div class="container">
     <h1>Aanwezigheidsregistratie</h1>
 
-    <form method="POST">
-        <?php foreach ($days_of_week as $day): ?>
-            <button type="submit" name="day" value="<?php echo $day; ?>"
-                class="btn btn-day <?php echo ($selected_day === $day) ? 'active-day' : ''; ?>">
-                <?php echo $day; ?>
-            </button>
-        <?php endforeach; ?>
-    </form>
+    <div class="day-selection">
+        <form method="POST">
+            <?php foreach ($days_of_week as $day): ?>
+                <button type="submit" name="day" value="<?php echo $day; ?>"
+                    class="btn btn-day <?php echo ($selected_day === $day) ? 'active-day' : ''; ?>">
+                    <?php echo $day; ?>
+                </button>
+            <?php endforeach; ?>
+        </form>
+    </div>
+
 
     <!-- Zoekformulier -->
     <div class="search-container show" style="position: relative;">
