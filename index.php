@@ -75,9 +75,7 @@ $stmt->close();
     <style>
                 body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(to right, rgba(29, 54, 96, 0.4), rgba(50, 90, 160, 0.4)), 
-                        url('pop-bg.jpg') no-repeat center center fixed;
-            background-size: cover;
+            background: linear-gradient(to right, #cfe2ff, #e7f0ff);
             color: #333;
             display: flex;
             justify-content: center;
@@ -92,7 +90,7 @@ $stmt->close();
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         h1 {
-            color: #1d3660; /* Aangepast naar de nieuwe kleur */
+            color: #007bff;
             font-size: 28px;
             font-weight: bold;
             text-align: center;
@@ -116,13 +114,10 @@ $stmt->close();
             padding: 10px 15px;
             font-weight: bold;
             border-radius: 8px;
-            background-color: #1d3660; /* Nieuwe kleur */
-            color: white;
-            border: none;
             transition: all 0.3s ease-in-out;
         }
         .btn-day:hover {
-            background-color: #14284b;
+            background-color: #0056b3;
             color: white;
         }
         .table-responsive {
@@ -134,11 +129,9 @@ $stmt->close();
             width: 100%;
             border-collapse: collapse;
             background-color: white;
-            border-radius: 8px;
-            overflow: hidden;
         }
         th {
-            background: #1d3660; /* Nieuwe kleur */
+            background: #007bff;
             color: white;
             font-weight: bold;
             text-transform: uppercase;
@@ -168,7 +161,6 @@ $stmt->close();
                 font-size: 13px;
             }
         }
-
     </style>
 </head>
 <body>
