@@ -133,7 +133,7 @@ $stmt->close();
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
         }
         table {
-            width: 100%;
+            width: 70%;
             border-collapse: collapse;
             background-color: white;
         }
@@ -189,11 +189,11 @@ $stmt->close();
         }
         @media (min-width: 769px) {
             .day-nav {
-                justify-content: center;
-                text-align: center;
+                justify-content: space-between;
+                align-items: center;
             }
             .btn-day {
-                width: 45%; /* Knoppen zijn kleiner en staan naast elkaar */
+                width: 45%; /* Knoppen naast elkaar, kleiner dan voorheen */
             }
             table {
                 max-width: 800px; /* Beperk de breedte van de tabel op grotere schermen */
@@ -207,14 +207,14 @@ $stmt->close();
 <div class="container">
     <h1>Aanwezigheidsregistratie</h1>
 
+    <!-- Knoppen aan de zijkanten van de datum -->
     <div class="day-nav">
-        <form method="POST" action="">
+        <form method="POST" action="" style="display: flex; justify-content: space-between; width: 100%;">
             <button type="submit" name="day" value="<?php echo $previous_day; ?>" class="btn btn-outline-primary btn-day">&#8592; Vorige Dag</button>
+            <h2><?php echo htmlspecialchars($selected_day) . " - " . htmlspecialchars($selected_date_formatted ?? 'Geen datum beschikbaar'); ?></h2>
             <button type="submit" name="day" value="<?php echo $next_day; ?>" class="btn btn-outline-primary btn-day">Volgende Dag &#8594;</button>
         </form>
     </div>
-
-    <h2><?php echo htmlspecialchars($selected_day) . " - " . htmlspecialchars($selected_date_formatted ?? 'Geen datum beschikbaar'); ?></h2>
 
     <div class="table-responsive">
         <table class="table table-bordered align-middle">
