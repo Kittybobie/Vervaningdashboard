@@ -120,13 +120,13 @@ $stmt->close();
         }
 
         .btn-day {
-            font-size: 14px; /* Iets grotere tekst voor de knoppen */
-            padding: 10px 20px; /* Vergrote padding voor grotere knoppen */
+            font-size: 16px; /* Grotere tekst voor de knoppen */
+            padding: 12px 24px; /* Vergrote padding voor grotere knoppen */
             font-weight: bold;
             border-radius: 8px; /* Kleinere radius voor een strakkere knop */
             transition: all 0.3s ease-in-out;
             width: auto; /* De breedte past zich aan de tekst aan */
-            margin: 0 20px; /* Vergrote marge aan beide kanten voor meer ruimte */
+            margin: 0 15px; /* Milder vergrote marge aan beide kanten */
         }
 
         .btn-day:hover {
