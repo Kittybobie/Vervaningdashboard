@@ -1,13 +1,13 @@
 <?php
-include 'config.php'; // Zorgt dat de databaseconnectie wordt ingeladen
+include 'config.php'; // Laad databaseverbinding
 session_start();
 
-// Controleer databaseverbinding
+// **Controleer databaseverbinding**
 if ($conn->connect_error) {
     die("Verbinding mislukt: " . $conn->connect_error);
 }
 
-// Definieer de dagen correct
+// **Definieer de dagen correct**
 $dagen_mapping = [
     'Maandag' => 'Monday',
     'Dinsdag' => 'Tuesday',
@@ -16,16 +16,16 @@ $dagen_mapping = [
     'Vrijdag' => 'Friday'
 ];
 
-// Verkrijg de geselecteerde dag
+// **Haal de geselecteerde dag op**
 $selected_day = $_SESSION['selected_day'] ?? 'Maandag';
 
-// Als er een POST-verzoek is om de dag te wijzigen
+// **Als er een POST-verzoek is om de dag te wijzigen**
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['day'])) {
     $_SESSION['selected_day'] = $_POST['day'];
     $selected_day = $_POST['day'];
 }
 
-// **Converteer de dag naar een geldige datum van deze week**
+// **Zet de dag om naar een geldige datum van deze week**
 if (isset($dagen_mapping[$selected_day])) {
     $selected_date = new DateTime('this week ' . $dagen_mapping[$selected_day]);
     $selected_date_formatted = $selected_date->format('Y-m-d');
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['leraar_id'])) {
             $delete_stmt->close();
         }
 
-        // **Loop door de lesuren en sla enkel relevante records op**
+        // **Loop door de lesuren en sla alleen records op als nodig**
         for ($hour = 1; $hour <= 8; $hour++) {
             $current_status = $status[$leraar_id][$hour] ?? 'aanwezig';
             $current_reden = $_POST['reden'][$leraar_id][$hour] ?? null;
@@ -72,25 +72,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['leraar_id'])) {
     }
 }
 
-// Sluit databaseverbinding
-$conn->close();
+// ✅ **AUTO_INCREMENT resetten als de tabel leeg is**
+$sql_check_empty = "SELECT COUNT(*) as total FROM attendance";
+$result = $conn->query($sql_check_empty);
+$row = $result->fetch_assoc();
 
-    // Zoek leerkrachten
-    if (isset($_POST['search'])) {
-        $teacher_name = $conn->real_escape_string($_POST['teacher_name']);
-        $sql = "SELECT * FROM teachers WHERE name LIKE '%$teacher_name%'";
-        $result = $conn->query($sql);
-    }
-
+if ($row['total'] == 0) {
     $sql_reset_auto_increment = "ALTER TABLE attendance AUTO_INCREMENT = 1";
-    // Voer de query uit
-    if ($conn->query($sql_reset_auto_increment) === TRUE) {
-        // success
-    } else {
-        // failure
-    }
+    $conn->query($sql_reset_auto_increment);
+}
 
+// ✅ **Zoekfunctie (werkt correct)**
+if (isset($_POST['search'])) {
+    $teacher_name = $conn->real_escape_string($_POST['teacher_name']);
+    $sql = "SELECT * FROM teachers WHERE name LIKE '%$teacher_name%'";
+    $result = $conn->query($sql);
+}
+
+// **Sluit databaseverbinding**
+$conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="nl">
