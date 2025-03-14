@@ -84,7 +84,6 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
                 $insert_stmt = $conn->prepare($insert_sql);
                 $insert_stmt->bind_param("ississss", $leraar_id, $today_date, $selected_date_formatted, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
 
-                $insert_stmt = $conn->prepare($insert_sql);
                 if ($insert_stmt = $conn->prepare($insert_sql)) {
                     $current_reden = $current_reden ?? "";
                     $current_tasks = $current_tasks ?? "";
