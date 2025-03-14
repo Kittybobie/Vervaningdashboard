@@ -39,7 +39,7 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
                 $current_tasks = NULL;
             }
 
-            // ✅ Verwijder alleen het specifieke lesuur voor de geselecteerde dag, NIET alle dagen
+            // ✅ Verwijder enkel het specifieke lesuur op de geselecteerde dag, andere dagen blijven staan
             if ($current_status === 'aanwezig') {
                 $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND hour = ? AND date = CURDATE()";
                 $delete_stmt = $conn->prepare($delete_sql);
@@ -51,26 +51,41 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
                     error_log("Delete failed: " . $conn->error);
                 }
             } else {
-                // ✅ Correcte `INSERT ... ON DUPLICATE KEY UPDATE`
-                $sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
-                        VALUES (?, CURDATE(), ?, ?, ?, ?, ?) 
-                        ON DUPLICATE KEY UPDATE 
-                        status = VALUES(status), reason = VALUES(reason), tasks = VALUES(tasks)";
+                // ✅ Controleer of het record al bestaat voor deze leraar, dag en lesuur
+                $check_sql = "SELECT id FROM attendance WHERE teacher_id = ? AND day = ? AND hour = ? AND date = CURDATE()";
+                $check_stmt = $conn->prepare($check_sql);
+                $check_stmt->bind_param("isi", $leraar_id, $selected_day, $hour);
+                $check_stmt->execute();
+                $check_stmt->store_result();
+                $record_exists = $check_stmt->num_rows > 0;
+                $check_stmt->close();
 
-                $stmt = $conn->prepare($sql);
-                if ($stmt === false) {
-                    error_log("Prepare insert/update failed: " . $conn->error);
-                    continue;
+                if ($record_exists) {
+                    // ✅ Update bestaande entry
+                    $update_sql = "UPDATE attendance 
+                                   SET status = ?, reason = ?, tasks = ? 
+                                   WHERE teacher_id = ? AND day = ? AND hour = ? AND date = CURDATE()";
+                    $update_stmt = $conn->prepare($update_sql);
+                    if ($update_stmt) {
+                        $update_stmt->bind_param("sssssi", $current_status, $current_reden, $current_tasks, $leraar_id, $selected_day, $hour);
+                        $update_stmt->execute();
+                        $update_stmt->close();
+                    } else {
+                        error_log("Update failed: " . $conn->error);
+                    }
+                } else {
+                    // ✅ Voeg een nieuwe entry toe
+                    $insert_sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
+                                   VALUES (?, CURDATE(), ?, ?, ?, ?, ?)";
+                    $insert_stmt = $conn->prepare($insert_sql);
+                    if ($insert_stmt) {
+                        $insert_stmt->bind_param("isisss", $leraar_id, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
+                        $insert_stmt->execute();
+                        $insert_stmt->close();
+                    } else {
+                        error_log("Insert failed: " . $conn->error);
+                    }
                 }
-
-                // Bind de parameters
-                $stmt->bind_param("isisss", $leraar_id, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
-
-                // Voer de query uit
-                if (!$stmt->execute()) {
-                    error_log("Execute failed: " . $stmt->error);
-                }
-                $stmt->close();
             }
         }
     }
