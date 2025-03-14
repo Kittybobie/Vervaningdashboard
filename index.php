@@ -104,7 +104,7 @@ $stmt->close();
             text-align: center;
             font-size: 20px;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin-top: 10px;
             color: #444;
         }
         .day-nav {
@@ -115,12 +115,12 @@ $stmt->close();
             flex-wrap: wrap;
         }
         .btn-day {
-            font-size: 16px;
-            padding: 12px 20px;
+            font-size: 14px;
+            padding: 8px 12px;
             font-weight: bold;
             border-radius: 8px;
             transition: all 0.3s ease-in-out;
-            width: 48%;
+            width: 45%;
             margin: 5px 0;
         }
         .btn-day:hover {
@@ -193,7 +193,7 @@ $stmt->close();
                 text-align: center;
             }
             .btn-day {
-                width: 45%; /* Knoppen zijn zoals voorheen, groot genoeg */
+                width: 45%; /* Knoppen zijn kleiner en staan naast elkaar */
             }
             table {
                 max-width: 800px; /* Beperk de breedte van de tabel op grotere schermen */
@@ -210,17 +210,11 @@ $stmt->close();
     <div class="day-nav">
         <form method="POST" action="">
             <button type="submit" name="day" value="<?php echo $previous_day; ?>" class="btn btn-outline-primary btn-day">&#8592; Vorige Dag</button>
-        </form>
-    </div>
-
-    <!-- Datum onder de knoppen -->
-    <h2><?php echo htmlspecialchars($selected_day) . " - " . htmlspecialchars($selected_date_formatted ?? 'Geen datum beschikbaar'); ?></h2>
-
-    <div class="day-nav">
-        <form method="POST" action="">
             <button type="submit" name="day" value="<?php echo $next_day; ?>" class="btn btn-outline-primary btn-day">Volgende Dag &#8594;</button>
         </form>
     </div>
+
+    <h2><?php echo htmlspecialchars($selected_day) . " - " . htmlspecialchars($selected_date_formatted ?? 'Geen datum beschikbaar'); ?></h2>
 
     <div class="table-responsive">
         <table class="table table-bordered align-middle">
@@ -275,6 +269,7 @@ $stmt->close();
         </table>
     </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
