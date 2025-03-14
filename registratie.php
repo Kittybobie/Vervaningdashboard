@@ -40,28 +40,37 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
             }
 
             // ✅ Verwijder alleen het specifieke lesuur voor de geselecteerde dag, NIET alle dagen
-            $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND hour = ? AND date = CURDATE()";
-            $delete_stmt = $conn->prepare($delete_sql);
-            if ($delete_stmt) {
-                $delete_stmt->bind_param("isi", $leraar_id, $selected_day, $hour);
-                $delete_stmt->execute();
-                $delete_stmt->close();
-            } else {
-                error_log("Delete failed: " . $conn->error);
-            }
-
-            // ✅ Voeg een nieuwe entry toe, maar alleen als de status niet 'aanwezig' is
-            if ($current_status !== 'aanwezig') {
-                $insert_sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
-                               VALUES (?, CURDATE(), ?, ?, ?, ?, ?)";
-                $insert_stmt = $conn->prepare($insert_sql);
-                if ($insert_stmt) {
-                    $insert_stmt->bind_param("isisss", $leraar_id, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
-                    $insert_stmt->execute();
-                    $insert_stmt->close();
+            if ($current_status === 'aanwezig') {
+                $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND hour = ? AND date = CURDATE()";
+                $delete_stmt = $conn->prepare($delete_sql);
+                if ($delete_stmt) {
+                    $delete_stmt->bind_param("isi", $leraar_id, $selected_day, $hour);
+                    $delete_stmt->execute();
+                    $delete_stmt->close();
                 } else {
-                    error_log("Insert failed: " . $conn->error);
+                    error_log("Delete failed: " . $conn->error);
                 }
+            } else {
+                // ✅ Correcte `INSERT ... ON DUPLICATE KEY UPDATE`
+                $sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
+                        VALUES (?, CURDATE(), ?, ?, ?, ?, ?) 
+                        ON DUPLICATE KEY UPDATE 
+                        status = VALUES(status), reason = VALUES(reason), tasks = VALUES(tasks)";
+
+                $stmt = $conn->prepare($sql);
+                if ($stmt === false) {
+                    error_log("Prepare insert/update failed: " . $conn->error);
+                    continue;
+                }
+
+                // Bind de parameters
+                $stmt->bind_param("isisss", $leraar_id, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
+
+                // Voer de query uit
+                if (!$stmt->execute()) {
+                    error_log("Execute failed: " . $stmt->error);
+                }
+                $stmt->close();
             }
         }
     }
