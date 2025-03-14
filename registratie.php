@@ -21,67 +21,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $selected_day = $_SESSION['selected_day']; // Update de lokale variabele
     }
     
-    // Verwerk aanwezigheid
-    if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
-        $teacher_ids = $_POST['leraar_id'];
-        $status = $_POST['status'] ?? [];
+// Verwerk aanwezigheid
+if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
+    $teacher_ids = $_POST['leraar_id'];
+    $status = $_POST['status'] ?? [];
 
-        // Loop door de leerkrachten
-        foreach ($teacher_ids as $index => $leraar_id) {
-            // Loop door de 8 lesuren (1 t/m 8)
-            for ($hour = 1; $hour <= 8; $hour++) {
-                // Verkrijg de status voor het huidige uur, standaard op 'aanwezig' als er geen keuze is
-                $current_status = $status[$leraar_id][$hour] ?? 'aanwezig';
-                
-                // Verkrijg de reden en taak voor het huidige uur (null als leeg)
-                $current_reden = $_POST['reden'][$leraar_id][$hour] ?? null;
-                $current_tasks = $_POST['tasks'][$leraar_id][$hour] ?? null;
+    foreach ($teacher_ids as $index => $leraar_id) {
+        for ($hour = 1; $hour <= 8; $hour++) {
+            $current_status = $status[$leraar_id][$hour] ?? 'aanwezig';
+            $current_reden = $_POST['reden'][$leraar_id][$hour] ?? null;
+            $current_tasks = $_POST['tasks'][$leraar_id][$hour] ?? null;
 
-                // Zorg ervoor dat lege velden voor reden en taak als NULL worden opgeslagen
-                if (empty($current_reden)) {
-                    $current_reden = NULL;
-                }
-                if (empty($current_tasks)) {
-                    $current_tasks = NULL;
-                }
-                
-                // Als de status 'aanwezig' is, verwijderen we eventuele bestaande record
-                if ($current_status === 'aanwezig') {
-                    $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND hour = ? AND date = CURDATE()";
-                    $delete_stmt = $conn->prepare($delete_sql);
-                    if ($delete_stmt) {
-                        $delete_stmt->bind_param("isi", $leraar_id, $selected_day, $hour);
-                        $delete_stmt->execute();
-                        $delete_stmt->close();
-                    } else {
-                        error_log("Prepare delete failed: " . $conn->error);
-                    }
+            if (empty($current_reden)) {
+                $current_reden = NULL;
+            }
+            if (empty($current_tasks)) {
+                $current_tasks = NULL;
+            }
+
+            // ✅ Verwijder alleen het specifieke lesuur voor de geselecteerde dag, NIET alle dagen
+            $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND hour = ? AND date = CURDATE()";
+            $delete_stmt = $conn->prepare($delete_sql);
+            if ($delete_stmt) {
+                $delete_stmt->bind_param("isi", $leraar_id, $selected_day, $hour);
+                $delete_stmt->execute();
+                $delete_stmt->close();
+            } else {
+                error_log("Delete failed: " . $conn->error);
+            }
+
+            // ✅ Voeg een nieuwe entry toe, maar alleen als de status niet 'aanwezig' is
+            if ($current_status !== 'aanwezig') {
+                $insert_sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
+                               VALUES (?, CURDATE(), ?, ?, ?, ?, ?)";
+                $insert_stmt = $conn->prepare($insert_sql);
+                if ($insert_stmt) {
+                    $insert_stmt->bind_param("isisss", $leraar_id, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
+                    $insert_stmt->execute();
+                    $insert_stmt->close();
                 } else {
-                    // Alleen invoegen of updaten als de status 'afwezig' of 'in vergadering' is
-                    $sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
-                            VALUES (?, CURDATE(), ?, ?, ?, ?, ?) 
-                            ON DUPLICATE KEY UPDATE 
-                                day = ?, status = ?, reason = ?, tasks = ?";
-    
-                    $stmt = $conn->prepare($sql);
-    
-                    if ($stmt === false) {
-                        error_log("Prepare insert/update failed: " . $conn->error);
-                        continue;
-                    }
-    
-                    // Bind de parameters
-                    $stmt->bind_param("isssssssss", $leraar_id, $selected_day, $hour, $current_status, $current_reden, $current_tasks, $selected_day, $current_status, $current_reden, $current_tasks);
-    
-                    // Voer de query uit
-                    if (!$stmt->execute()) {
-                        error_log("Execute failed: " . $stmt->error);
-                    }
-                    $stmt->close();
+                    error_log("Insert failed: " . $conn->error);
                 }
             }
         }
     }
+}
+
 
     // Zoek leerkrachten
     if (isset($_POST['search'])) {
