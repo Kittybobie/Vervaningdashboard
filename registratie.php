@@ -39,30 +39,21 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
                 $current_tasks = NULL;
             }
 
-            // ✅ Stap 1: Controleer of er al een record bestaat voor deze leraar, dag en lesuur
-            $check_sql = "SELECT id FROM attendance WHERE teacher_id = ? AND date = CURDATE() AND day = ? AND hour = ?";
-            $check_stmt = $conn->prepare($check_sql);
-            $check_stmt->bind_param("isi", $leraar_id, $selected_day, $hour);
-            $check_stmt->execute();
-            $check_stmt->store_result();
-            $record_exists = $check_stmt->num_rows > 0;
-            $check_stmt->close();
-
-            if ($record_exists) {
-                // ✅ Update het bestaande record
-                $update_sql = "UPDATE attendance 
-                               SET status = ?, reason = ?, tasks = ? 
-                               WHERE teacher_id = ? AND date = CURDATE() AND day = ? AND hour = ?";
-                $update_stmt = $conn->prepare($update_sql);
-                if ($update_stmt) {
-                    $update_stmt->bind_param("sssssi", $current_status, $current_reden, $current_tasks, $leraar_id, $selected_day, $hour);
-                    $update_stmt->execute();
-                    $update_stmt->close();
+            // ✅ Stap 1: Verwijder ALLE records voor deze leraar en deze DAG (voorkomt duplicaten)
+            if ($hour === 1) { // Zorgt ervoor dat het maar één keer gebeurt per leraar per dag
+                $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND date = CURDATE()";
+                $delete_stmt = $conn->prepare($delete_sql);
+                if ($delete_stmt) {
+                    $delete_stmt->bind_param("is", $leraar_id, $selected_day);
+                    $delete_stmt->execute();
+                    $delete_stmt->close();
                 } else {
-                    error_log("Update failed: " . $conn->error);
+                    error_log("Delete failed: " . $conn->error);
                 }
-            } else {
-                // ✅ Voeg een nieuwe entry toe als deze nog niet bestaat
+            }
+
+            // ✅ Stap 2: Voeg de nieuwe invoer toe als het NIET "aanwezig" is
+            if ($current_status !== 'aanwezig') {
                 $insert_sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
                                VALUES (?, CURDATE(), ?, ?, ?, ?, ?)";
                 $insert_stmt = $conn->prepare($insert_sql);
@@ -77,6 +68,7 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
         }
     }
 }
+
 
 
     // Zoek leerkrachten
