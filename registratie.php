@@ -112,13 +112,14 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
     <style>
 body {
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(to right, #cfe2ff, #e7f0ff);
-    background: url('vervaningdashboard/pop-bg.jpg') no-repeat center center fixed;
+    background: linear-gradient(to right, rgba(29, 54, 96, 0.8), rgba(50, 90, 160, 0.8)), 
+                url('pop-bg.jpg') no-repeat center center fixed;
     background-size: cover;
     color: #333;
     margin: 0;
     padding: 0;
 }
+
 
 /* Container */
 .container {
@@ -161,6 +162,7 @@ h1 {
 
 .btn-day:hover {
     background: #14284b; /* Iets donkerdere variant */
+    color: white;
     box-shadow: 0 5px 12px rgba(29, 54, 96, 0.4);
 }
 
