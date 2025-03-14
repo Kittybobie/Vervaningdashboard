@@ -321,14 +321,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <th>Naam</th>
                     <th>Lesuur</th>
                     <!-- Aangepaste code: Checkbox naast "Status" -->
-                    <th>Status 
-                        <div style="display: flex; align-items: center; gap: 8px; justify-content: center; margin-top: 5px;">
-                            <label for="setAllAbsent" style="margin: 0; font-size: 14px; font-weight: normal; cursor: pointer;">
-                                Volledige dag afwezig
-                            </label>
-                            <input type="checkbox" name="Alles-afwezig" id="setAllAbsent">
-                        </div>
+                    <th style="text-align: center;">
+                        Statsu <br>
+                        <label for="setAllAbsent" style="display: inline-flex; align-items: center; gap: 5px; font-size: 14px; font-weight: normal; cursor: pointer; margin-top: 5px;">
+                            <input type="checkbox" name="Alles-afwezig" id="setAllAbsent" style="transform: scale(1.2); cursor: pointer;">
+                            Volledige dag afwezig
+                        </label>
                     </th>
+
                     <th>Reden</th>
                     <th>Taak</th>
                 </tr>
