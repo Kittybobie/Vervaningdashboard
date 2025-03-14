@@ -62,19 +62,20 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
                     die("Ongeldige dag geselecteerd.");
                 }
 
-            // ✅ Stap 1: Verwijder ALLE records voor deze leraar en deze DAG (voorkomt duplicaten)
-            if ($hour === 1) { // Zorgt ervoor dat het maar één keer gebeurt per leraar per dag
-                $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND record_date = ?";
-                $delete_stmt = $conn->prepare($delete_sql);
-                $delete_stmt->bind_param("iss", $leraar_id, $selected_day, $selected_date_formatted);
-                if ($delete_stmt) {
-                    $delete_stmt->bind_param("is", $leraar_id, ucfirst(strtolower($selected_day)));
-                    $delete_stmt->execute();
-                    $delete_stmt->close();
-                } else {
-                    error_log("Delete failed: " . $conn->error);
+                if ($hour === 1) { // Zorgt ervoor dat het maar één keer gebeurt per leraar per dag
+                    $temp_value = get_some_value(); // Add this line to get the value
+                    $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND record_date = ?";
+                    $delete_stmt = $conn->prepare($delete_sql);
+                    
+                    if ($delete_stmt) {
+                        // Adjust the bind_param to include $temp_value if needed
+                        $delete_stmt->bind_param("iss", $temp_value, $selected_day, $selected_date_formatted);
+                        $delete_stmt->execute();
+                        $delete_stmt->close();
+                    } else {
+                        error_log("Delete failed: " . $conn->error);
+                    }
                 }
-            }
 
           
             if ($current_status !== 'aanwezig') {
