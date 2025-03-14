@@ -26,43 +26,42 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
     $teacher_ids = $_POST['leraar_id'];
     $status = $_POST['status'] ?? [];
 
-    foreach ($teacher_ids as $index => $leraar_id) {
-        // ✅ Stap 1: Verwijder eerst ALLE bestaande records van deze leraar voor deze dag
-        $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND date = CURDATE()";
+// ✅ Stap 1: Verwijder alleen de records die gewijzigd moeten worden
+foreach ($teacher_ids as $index => $leraar_id) {
+    for ($hour = 1; $hour <= 8; $hour++) {
+        $current_status = $status[$leraar_id][$hour] ?? 'aanwezig';
+        $current_reden = $_POST['reden'][$leraar_id][$hour] ?? null;
+        $current_tasks = $_POST['tasks'][$leraar_id][$hour] ?? null;
+
+        if (empty($current_reden)) {
+            $current_reden = NULL;
+        }
+        if (empty($current_tasks)) {
+            $current_tasks = NULL;
+        }
+
+        // ✅ Verwijder alleen bestaande records voor dezelfde `teacher_id`, `day`, `hour`, en `date`
+        $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND hour = ? AND date = CURDATE()";
         $delete_stmt = $conn->prepare($delete_sql);
         if ($delete_stmt) {
-            $delete_stmt->bind_param("is", $leraar_id, $selected_day);
+            $delete_stmt->bind_param("isi", $leraar_id, $selected_day, $hour);
             $delete_stmt->execute();
             $delete_stmt->close();
         } else {
             error_log("Delete failed: " . $conn->error);
         }
 
-        // ✅ Stap 2: Voeg de nieuwe gegevens in
-        for ($hour = 1; $hour <= 8; $hour++) {
-            $current_status = $status[$leraar_id][$hour] ?? 'aanwezig';
-            $current_reden = $_POST['reden'][$leraar_id][$hour] ?? null;
-            $current_tasks = $_POST['tasks'][$leraar_id][$hour] ?? null;
-
-            if (empty($current_reden)) {
-                $current_reden = NULL;
-            }
-            if (empty($current_tasks)) {
-                $current_tasks = NULL;
-            }
-
-            if ($current_status !== 'aanwezig') { 
-                // ✅ Nu kan er veilig een nieuwe entry worden toegevoegd
-                $insert_sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
-                               VALUES (?, CURDATE(), ?, ?, ?, ?, ?)";
-                $insert_stmt = $conn->prepare($insert_sql);
-                if ($insert_stmt) {
-                    $insert_stmt->bind_param("isisss", $leraar_id, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
-                    $insert_stmt->execute();
-                    $insert_stmt->close();
-                } else {
-                    error_log("Insert failed: " . $conn->error);
-                }
+        // ✅ Voeg een nieuwe entry toe, maar alleen als de status niet 'aanwezig' is
+        if ($current_status !== 'aanwezig') {
+            $insert_sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
+                           VALUES (?, CURDATE(), ?, ?, ?, ?, ?)";
+            $insert_stmt = $conn->prepare($insert_sql);
+            if ($insert_stmt) {
+                $insert_stmt->bind_param("isisss", $leraar_id, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
+                $insert_stmt->execute();
+                $insert_stmt->close();
+            } else {
+                error_log("Insert failed: " . $conn->error);
             }
         }
     }
