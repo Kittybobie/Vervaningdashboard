@@ -295,11 +295,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container">
     <h1>Aanwezigheidsregistratie</h1>
 
-    <!-- Weergave van de geselecteerde dag -->
-    <?php if ($selected_day): ?>
-        <h2 style="text-align: center;">Geselecteerde dag: <?php echo htmlspecialchars($selected_day); ?></h2>
-    <?php endif; ?>
-
     <!-- Keuze voor de dag -->
     <form method="POST">
         <button type="submit" name="day" class="btn-day" value="Maandag">Maandag</button>
@@ -309,16 +304,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit" name="day" class="btn-day" value="Vrijdag">Vrijdag</button>
     </form>
 
-    <!-- Zoekformulier (verschijnt alleen als een dag is geselecteerd) -->
-    <?php if ($selected_day): ?>
-        <div class="search-container show" style="position: relative;">
-            <form method="POST" class="form-group">
-                <input type="text" id="teacher_search" name="teacher_name" style="margin-right: 15px; width:97.2%;" placeholder="Zoek leerkracht..." required autocomplete="off">
-                <button type="submit" class="btn-zoeken" name="search">Zoeken</button>
-            </form>
-            <div id="suggestions"></div>
-        </div>
-    <?php endif; ?>
+    <!-- Zoekformulier -->
+    <div class="search-container show" style="position: relative;">
+        <form method="POST" class="form-group">
+            <input type="text" id="teacher_search" name="teacher_name" placeholder="Zoek leerkracht..." required autocomplete="off">
+            <button type="submit" class="btn-zoeken" name="search">Zoeken</button>
+        </form>
+        <div id="suggestions"></div>
+    </div>
 
     <!-- Zoekresultaten -->
     <?php if (isset($result) && $result->num_rows > 0): ?>
@@ -327,7 +320,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <tr>
                     <th>Naam</th>
                     <th>Lesuur</th>
-                    <th>Status</th>
+                    <!-- Aangepaste code: Checkbox naast "Status" -->
+                    <th>Status 
+                        <input type="checkbox" id="setAllAbsent" style="margin-left:10px;">
+                    </th>
                     <th>Reden</th>
                     <th>Taak</th>
                 </tr>
@@ -340,7 +336,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <td><?php echo "Lesuur $hour"; ?></td>
                             <input type='hidden' name='leraar_id[]' value='<?php echo htmlspecialchars($teacher['id']); ?>'>
                             <td>
-                                <select name='status[<?php echo $teacher['id']; ?>][<?php echo $hour; ?>]' required>
+                                <!-- Aangepaste code: class "status-dropdown" toegevoegd -->
+                                <select name='status[<?php echo $teacher['id']; ?>][<?php echo $hour; ?>]' class='status-dropdown' required>
                                     <option value='aanwezig'>Aanwezig</option>
                                     <option value='afwezig'>Afwezig</option>
                                     <option value='in vergadering'>In vergadering</option>
@@ -362,6 +359,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p>Geen leerkrachten gevonden.</p>
     <?php endif; ?>
 </div>
+
+
+<script>
+document.getElementById("setAllAbsent").addEventListener("change", function() {
+    let statusDropdowns = document.querySelectorAll(".status-dropdown");
+    let setToAbsent = this.checked;
+    statusDropdowns.forEach(dropdown => {
+        dropdown.value = setToAbsent ? "afwezig" : "aanwezig";
+    });
+});
+</script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
