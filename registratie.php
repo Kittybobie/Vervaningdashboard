@@ -26,62 +26,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $teacher_ids = $_POST['leraar_id'];
         $status = $_POST['status'] ?? [];
 
-        // Loop door de leerkrachten
         foreach ($teacher_ids as $index => $leraar_id) {
-            // Loop door de 8 lesuren (1 t/m 8)
             for ($hour = 1; $hour <= 8; $hour++) {
-                // Verkrijg de status voor het huidige uur, standaard op 'aanwezig' als er geen keuze is
                 $current_status = $status[$leraar_id][$hour] ?? 'aanwezig';
-                
-                // Verkrijg de reden en taak voor het huidige uur (null als leeg)
                 $current_reden = $_POST['reden'][$leraar_id][$hour] ?? null;
                 $current_tasks = $_POST['tasks'][$leraar_id][$hour] ?? null;
 
-                // Zorg ervoor dat lege velden voor reden en taak als NULL worden opgeslagen
                 if (empty($current_reden)) {
                     $current_reden = NULL;
                 }
                 if (empty($current_tasks)) {
                     $current_tasks = NULL;
                 }
-                
-                // Als de status 'aanwezig' is, verwijderen we eventuele bestaande record
-                if ($current_status === 'aanwezig') {
-                    $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND hour = ? AND date = CURDATE()";
-                    $delete_stmt = $conn->prepare($delete_sql);
-                    if ($delete_stmt) {
-                        $delete_stmt->bind_param("isi", $leraar_id, $selected_day, $hour);
-                        $delete_stmt->execute();
-                        $delete_stmt->close();
-                    } else {
-                        error_log("Prepare delete failed: " . $conn->error);
-                    }
+
+                // ✅ Controleer of de entry al bestaat
+                $check_sql = "SELECT id FROM attendance WHERE teacher_id = ? AND day = ? AND hour = ? AND date = CURDATE()";
+                $check_stmt = $conn->prepare($check_sql);
+                $check_stmt->bind_param("isi", $leraar_id, $selected_day, $hour);
+                $check_stmt->execute();
+                $check_stmt->store_result();
+
+                if ($check_stmt->num_rows > 0) {
+                    // ✅ Update bestaande entry
+                    $update_sql = "UPDATE attendance 
+                                SET status = ?, reason = ?, tasks = ? 
+                                WHERE teacher_id = ? AND day = ? AND hour = ? AND date = CURDATE()";
+                    $update_stmt = $conn->prepare($update_sql);
+                    $update_stmt->bind_param("sssssi", $current_status, $current_reden, $current_tasks, $leraar_id, $selected_day, $hour);
+                    $update_stmt->execute();
+                    $update_stmt->close();
                 } else {
-                    // Alleen invoegen of updaten als de status 'afwezig' of 'in vergadering' is
-                    $sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
-                            VALUES (?, CURDATE(), ?, ?, ?, ?, ?) 
-                            ON DUPLICATE KEY UPDATE 
-                                day = ?, status = ?, reason = ?, tasks = ?";
-    
-                    $stmt = $conn->prepare($sql);
-    
-                    if ($stmt === false) {
-                        error_log("Prepare insert/update failed: " . $conn->error);
-                        continue;
-                    }
-    
-                    // Bind de parameters
-                    $stmt->bind_param("isssssssss", $leraar_id, $selected_day, $hour, $current_status, $current_reden, $current_tasks, $selected_day, $current_status, $current_reden, $current_tasks);
-    
-                    // Voer de query uit
-                    if (!$stmt->execute()) {
-                        error_log("Execute failed: " . $stmt->error);
-                    }
-                    $stmt->close();
+                    // ✅ Voeg een nieuwe entry toe als deze nog niet bestaat
+                    $insert_sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
+                                VALUES (?, CURDATE(), ?, ?, ?, ?, ?)";
+                    $insert_stmt = $conn->prepare($insert_sql);
+                    $insert_stmt->bind_param("isisss", $leraar_id, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
+                    $insert_stmt->execute();
+                    $insert_stmt->close();
                 }
+
+                $check_stmt->close();
             }
         }
     }
+
 
     // Zoek leerkrachten
     if (isset($_POST['search'])) {
