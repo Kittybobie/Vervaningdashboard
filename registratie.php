@@ -10,6 +10,21 @@ if ($conn->connect_error) {
 $tasks = [];
 $reden = [];
 
+// Definieer de dagen van de week correct
+$days_of_week = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag'];
+
+// Controleer of een dag geselecteerd is, zo niet, standaard naar Maandag
+if (!isset($_SESSION['selected_day'])) {
+    $_SESSION['selected_day'] = 'Maandag';
+}
+$selected_day = $_SESSION['selected_day'];
+
+// Controleer of de gebruiker een andere dag heeft gekozen
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['day'])) {
+    $_SESSION['selected_day'] = $_POST['day'];
+    $selected_day = $_POST['day'];
+}
+
 // Verkrijg de geselecteerde dag uit de sessie
 $selected_day = $_SESSION['selected_day'] ?? '';
 
@@ -300,8 +315,6 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
 <div class="container">
     <h1>Aanwezigheidsregistratie</h1>
 
-    $days_of_week = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag'];
-
     <form method="POST">
         <?php foreach ($days_of_week as $day): ?>
             <button type="submit" name="day" value="<?php echo $day; ?>"
@@ -310,6 +323,7 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
             </button>
         <?php endforeach; ?>
     </form>
+
     <!-- Zoekformulier -->
     <div class="search-container show" style="position: relative;">
         <form method="POST" class="form-group">
