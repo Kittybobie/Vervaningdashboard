@@ -300,7 +300,8 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
 <div class="container">
     <h1>Aanwezigheidsregistratie</h1>
 
-    <!-- Keuze voor de dag -->
+    $days_of_week = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag'];
+
     <form method="POST">
         <?php foreach ($days_of_week as $day): ?>
             <button type="submit" name="day" value="<?php echo $day; ?>"
@@ -309,7 +310,6 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
             </button>
         <?php endforeach; ?>
     </form>
-
     <!-- Zoekformulier -->
     <div class="search-container show" style="position: relative;">
         <form method="POST" class="form-group">
