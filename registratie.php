@@ -327,15 +327,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <!-- Extra rij onder de header voor globale instellingen -->
             <tr style="background-color: #f0f0f0;">
-                <td colspan="2" style="text-align: right; font-weight: bold;">Globale instellingen:</td>
+                <td colspan="2" style="text-align: center; font-weight: bold;">Globale instellingen:</td>
                 <td style="text-align: center;">
                     <label for="setAllAbsent" style="display: inline-flex; align-items: center; gap: 5px; font-size: 14px; cursor: pointer;">
-                        <input type="checkbox" id="setAllAbsent" style="transform: scale(1.2); cursor: pointer;">
+                        <input type="checkbox" id="setAllAbsent" style="transform: scale(1.2); cursor: pointer; text-align: center; vertical-align: middle;">
                         Volledige dag afwezig
                     </label>
                 </td>
                 <td style="text-align: center;">
-                    <textarea id="globalReason" placeholder="Reden voor iedereen..." style="width: 90%; resize: none;"></textarea>
+                    <textarea id="globalReason" placeholder="Reden voor iedereen..." style="width: 90%; resize: none; "></textarea>
                 </td>
                 <td style="text-align: center;">
                     <textarea id="globalTask" placeholder="Taak voor iedereen..." style="width: 90%; resize: none;"></textarea>
