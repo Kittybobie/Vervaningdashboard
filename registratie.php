@@ -322,7 +322,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <th>Lesuur</th>
                     <!-- Aangepaste code: Checkbox naast "Status" -->
                     <th>Status 
-                        <input type="checkbox" name="Alles-afwezig"id="setAllAbsent" style="margin-left:10px;">
+                        <p>Volledige dag afwezig</p><input type="checkbox" name="Alles-afwezig" id="setAllAbsent" style="margin-left:10px;">
                     </th>
                     <th>Reden</th>
                     <th>Taak</th>
