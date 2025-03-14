@@ -70,6 +70,7 @@ $stmt->close();
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vervangingen - Aanwezigheidsdashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -81,14 +82,16 @@ $stmt->close();
             display: flex;
             justify-content: center;
             align-items: top;
-            margin-top:50px;
+            margin-top: 50px;
+            padding: 0 10px;
         }
         .container {
-            max-width: 950px;
+            max-width: 100%;
             background-color: #ffffff;
             border-radius: 10px;
             padding: 25px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
         }
         h1 {
             color: #1d3660;
@@ -109,6 +112,7 @@ $stmt->close();
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
         .btn-day {
             font-size: 16px;
@@ -116,6 +120,8 @@ $stmt->close();
             font-weight: bold;
             border-radius: 8px;
             transition: all 0.3s ease-in-out;
+            width: 48%;
+            margin: 5px 0;
         }
         .btn-day:hover {
             background-color: #1d3660;
@@ -155,11 +161,29 @@ $stmt->close();
         }
         @media (max-width: 768px) {
             .container {
-                width: 95%;
+                width: 100%;
                 padding: 15px;
             }
             table {
                 font-size: 13px;
+                display: block;
+                overflow-x: auto;
+            }
+            .day-nav {
+                justify-content: center;
+                text-align: center;
+            }
+            .btn-day {
+                width: 100%; /* Buttons take full width on small screens */
+            }
+            h1 {
+                font-size: 24px;
+            }
+            h2 {
+                font-size: 18px;
+            }
+            th, td {
+                padding: 10px;
             }
         }
     </style>
