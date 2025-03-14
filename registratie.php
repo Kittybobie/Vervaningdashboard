@@ -64,7 +64,6 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
             error_log("Delete failed: " . $conn->error);
         }
 
-        // ✅ Stap 3: Loop door de lesuren en voeg records toe
         for ($hour = 1; $hour <= 8; $hour++) {
             $current_status = $status[$leraar_id][$hour] ?? 'aanwezig';
             $current_reden = $_POST['reden'][$leraar_id][$hour] ?? null;
