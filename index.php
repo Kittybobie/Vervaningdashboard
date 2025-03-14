@@ -115,13 +115,13 @@ $stmt->close();
             flex-wrap: wrap;
         }
         .btn-day {
-            font-size: 12px; /* Kleinere tekst voor de knoppen */
-            padding: 6px 12px; /* Kleinere padding voor compactere knoppen */
+            font-size: 10px; /* Nog kleinere tekst voor de knoppen */
+            padding: 4px 8px; /* Kleinere padding om de knoppen compacter te maken */
             font-weight: bold;
-            border-radius: 8px;
+            border-radius: 6px; /* Kleinere radius voor een strakkere knop */
             transition: all 0.3s ease-in-out;
-            width: auto; /* Zorgt ervoor dat de knoppen alleen zo groot zijn als de tekst */
-            margin: 0 12px; /* Voeg marges toe aan de linker- en rechterkant van de knoppen */
+            width: auto; /* De breedte past zich aan de tekst aan */
+            margin: 0 12px; /* Kleiner marge aan beide kanten */
         }
         .btn-day:hover {
             background-color: #1d3660;
