@@ -76,7 +76,7 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
                 } else {
                     die("Ongeldige dag geselecteerd.");
                 }
-                
+
                 $today_date = date('Y-m-d'); // Huidige datum als `date`
                 $insert_sql = "INSERT INTO attendance (teacher_id, date, record_date, day, hour, status, reason, tasks) 
                                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -86,6 +86,8 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
 
                 $insert_stmt = $conn->prepare($insert_sql);
                 if ($insert_stmt) {
+                    var_dump($leraar_id, $selected_date_formatted, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
+                    exit();
                     $insert_stmt->bind_param("ississs", $leraar_id, $selected_date_formatted, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
                     $insert_stmt->execute();
                     $insert_stmt->close();
