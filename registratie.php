@@ -274,6 +274,23 @@ th, td {
     border: 1px solid #ddd;
 }
 
+textarea {
+    width: 100%; /* Volledige breedte van de cel */
+    min-height: 40px; /* Minimale hoogte */
+    border-radius: 8px; /* Afronding */
+    border: 2px solid #ccc; /* Zachte rand */
+    padding: 8px; /* Ruimte binnenin */
+    font-size: 14px;
+    resize: none; /* Gebruiker kan de grootte niet aanpassen */
+    box-sizing: border-box; /* Zorgt ervoor dat padding en border niet de breedte beïnvloeden */
+    background: #FAFAFA; /* Lichtgrijze achtergrond */
+}
+
+textarea:focus {
+    border: 2px solid #1d3660; /* Donkerblauwe rand bij focus */
+    outline: none; /* Verwijdert de standaard blauwe highlight */
+}
+
 /* Opslaan knop */
 .btn-primary {
     width: 100%;
