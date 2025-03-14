@@ -85,14 +85,16 @@ $stmt->close();
             margin-top: 50px;
             padding: 0 10px;
         }
+
         .container {
-            max-width: 70%;
+            max-width: 80%; /* Verhoogde breedte voor een bredere tabel, maar nog steeds binnen de container */
             background-color: #ffffff;
             border-radius: 10px;
             padding: 25px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             width: 100%;
         }
+
         h1 {
             color: #1d3660;
             font-size: 26px;
@@ -100,6 +102,7 @@ $stmt->close();
             text-align: center;
             margin-bottom: 10px;
         }
+
         h2 {
             text-align: center;
             font-size: 20px;
@@ -107,6 +110,7 @@ $stmt->close();
             margin-top: 10px;
             color: #444;
         }
+
         .day-nav {
             display: flex;
             justify-content: space-between;
@@ -119,7 +123,7 @@ $stmt->close();
             font-size: 12px; /* Kleinere tekst voor de knoppen */
             padding: 6px 12px; /* Kleinere padding voor compactere knoppen */
             font-weight: bold;
-            border-radius: 6px;
+            border-radius: 6px; /* Kleinere radius voor een strakkere knop */
             transition: all 0.3s ease-in-out;
             width: auto; /* De breedte past zich aan de tekst aan */
             margin: 0 10px; /* Ruimte tussen de knoppen */
@@ -130,24 +134,19 @@ $stmt->close();
             color: white;
         }
 
-        .date-container {
-            flex-grow: 1;
-            text-align: center;
-        }
-        .btn-day:hover {
-            background-color: #1d3660;
-            color: white;
-        }
         .table-responsive {
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            width: 100%; /* Zorg ervoor dat de tabel niet breder is dan de container */
         }
+
         table {
-            width: 75%;
+            width: 100%;
             border-collapse: collapse;
             background-color: white;
         }
+
         th {
             background: #1d3660;
             color: white;
@@ -158,11 +157,13 @@ $stmt->close();
             padding: 12px;
             font-size: 14px;
         }
+
         th, td {
             text-align: center;
             padding: 12px;
             border: 1px solid #ddd;
         }
+
         .empty-message {
             text-align: center;
             font-size: 16px;
@@ -170,6 +171,7 @@ $stmt->close();
             color: #666;
             padding: 20px;
         }
+
         @media (max-width: 768px) {
             .container {
                 width: 100%;
@@ -198,17 +200,20 @@ $stmt->close();
                 padding: 10px;
             }
         }
+
         @media (min-width: 769px) {
             .day-nav {
                 justify-content: space-between;
                 align-items: center;
             }
             .btn-day {
-                width: 45%; /* Knoppen naast elkaar, kleiner dan voorheen */
+                width: auto; /* Knoppen blijven klein en passen zich aan de tekstgrootte aan */
+                margin: 0 10px; /* Ruimte tussen de knoppen */
             }
             table {
-                max-width: 800px; /* Beperk de breedte van de tabel op grotere schermen */
-                margin: 0 auto; /* Centreer de tabel */
+                width: 100%; /* Zorg ervoor dat de tabel de volledige breedte benut zonder uit te rekken */
+                max-width: 100%; /* Beperk de breedte niet te veel, zodat de tekst goed leesbaar blijft */
+                margin: 0 auto; /* Centreer de tabel binnen de container */
             }
         }
     </style>
