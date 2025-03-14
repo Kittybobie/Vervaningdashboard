@@ -21,13 +21,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $selected_day = $_SESSION['selected_day']; // Update de lokale variabele
     }
     
-   // Verwerk aanwezigheid
+// Verwerk aanwezigheid
 if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
     $teacher_ids = $_POST['leraar_id'];
     $status = $_POST['status'] ?? [];
 
     foreach ($teacher_ids as $index => $leraar_id) {
-        // ✅ Stap 1: Verwijder eerst alle bestaande records van deze leraar voor deze dag
+        // ✅ Stap 1: Verwijder eerst ALLE bestaande records van deze leraar voor deze dag
         $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND date = CURDATE()";
         $delete_stmt = $conn->prepare($delete_sql);
         if ($delete_stmt) {
@@ -52,12 +52,17 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
             }
 
             if ($current_status !== 'aanwezig') { 
+                // ✅ Nu kan er veilig een nieuwe entry worden toegevoegd
                 $insert_sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
                                VALUES (?, CURDATE(), ?, ?, ?, ?, ?)";
                 $insert_stmt = $conn->prepare($insert_sql);
-                $insert_stmt->bind_param("isisss", $leraar_id, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
-                $insert_stmt->execute();
-                $insert_stmt->close();
+                if ($insert_stmt) {
+                    $insert_stmt->bind_param("isisss", $leraar_id, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
+                    $insert_stmt->execute();
+                    $insert_stmt->close();
+                } else {
+                    error_log("Insert failed: " . $conn->error);
+                }
             }
         }
     }
