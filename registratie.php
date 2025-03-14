@@ -8,6 +8,7 @@ if ($conn->connect_error) {
 }
 
 // **Definieer de dagen correct**
+$days_of_week = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag']; // ✅ Toegevoegd
 $dagen_mapping = [
     'Maandag' => 'Monday',
     'Dinsdag' => 'Tuesday',
@@ -72,21 +73,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['leraar_id'])) {
     }
 }
 
+// ✅ **Zoekfunctie (resultaten alleen tonen als er gezocht is)**
+$result = null;
+if (isset($_POST['search']) && !empty($_POST['teacher_name'])) {
+    $teacher_name = $conn->real_escape_string($_POST['teacher_name']);
+    $sql = "SELECT * FROM teachers WHERE name LIKE '%$teacher_name%'";
+    $result = $conn->query($sql);
+}
+
 // ✅ **AUTO_INCREMENT resetten als de tabel leeg is**
 $sql_check_empty = "SELECT COUNT(*) as total FROM attendance";
-$result = $conn->query($sql_check_empty);
-$row = $result->fetch_assoc();
+$empty_result = $conn->query($sql_check_empty);
+$row = $empty_result->fetch_assoc();
 
 if ($row['total'] == 0) {
     $sql_reset_auto_increment = "ALTER TABLE attendance AUTO_INCREMENT = 1";
     $conn->query($sql_reset_auto_increment);
-}
-
-// ✅ **Zoekfunctie (werkt correct)**
-if (isset($_POST['search'])) {
-    $teacher_name = $conn->real_escape_string($_POST['teacher_name']);
-    $sql = "SELECT * FROM teachers WHERE name LIKE '%$teacher_name%'";
-    $result = $conn->query($sql);
 }
 
 // **Sluit databaseverbinding**
