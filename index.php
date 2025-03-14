@@ -86,7 +86,7 @@ $stmt->close();
             padding: 0 10px;
         }
         .container {
-            max-width: 100%;
+            max-width: 70%;
             background-color: #ffffff;
             border-radius: 10px;
             padding: 25px;
@@ -115,13 +115,13 @@ $stmt->close();
             flex-wrap: wrap;
         }
         .btn-day {
-            font-size: 14px;
-            padding: 8px 12px;
+            font-size: 12px; /* Maak de tekst kleiner */
+            padding: 6px 12px; /* Verminder de padding voor kleinere knoppen */
             font-weight: bold;
             border-radius: 8px;
             transition: all 0.3s ease-in-out;
-            width: 45%;
-            margin: 5px 0;
+            width: auto; /* Zorg ervoor dat de knoppen automatisch hun breedte aanpassen */
+            margin: 5px; /* Voeg ruimte tussen de knoppen toe */
         }
         .btn-day:hover {
             background-color: #1d3660;
@@ -133,7 +133,7 @@ $stmt->close();
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
         }
         table {
-            width: 70%;
+            width: 75%;
             border-collapse: collapse;
             background-color: white;
         }
