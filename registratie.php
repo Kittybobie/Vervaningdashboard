@@ -320,21 +320,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <tr>
                 <th style="text-align: center; vertical-align: middle;">NAAM</th>
                 <th style="text-align: center; vertical-align: middle;">LESUUR</th>
-                <th style="text-align: center; vertical-align: middle;">
-                    STATUS <br>
-                    <label for="setAllAbsent" style="display: inline-flex; align-items: center; gap: 5px; font-size: 14px; font-weight: normal; cursor: pointer; margin-top: 5px;">
+                <th style="text-align: center; vertical-align: middle;">STATUS</th>
+                <th style="text-align: center; vertical-align: middle;">REDEN</th>
+                <th style="text-align: center; vertical-align: middle;">TAAK</th>
+            </tr>
+
+            <!-- Extra rij onder de header voor globale instellingen -->
+            <tr style="background-color: #f0f0f0;">
+                <td colspan="2" style="text-align: right; font-weight: bold;">Globale instellingen:</td>
+                <td style="text-align: center;">
+                    <label for="setAllAbsent" style="display: inline-flex; align-items: center; gap: 5px; font-size: 14px; cursor: pointer;">
                         <input type="checkbox" id="setAllAbsent" style="transform: scale(1.2); cursor: pointer;">
                         Volledige dag afwezig
                     </label>
-                </th>
-                <th style="text-align: center; vertical-align: middle;">
-                    REDEN <br>
+                </td>
+                <td style="text-align: center;">
                     <textarea id="globalReason" placeholder="Reden voor iedereen..." style="width: 90%; resize: none;"></textarea>
-                </th>
-                <th style="text-align: center; vertical-align: middle;">
-                    TAAK <br>
+                </td>
+                <td style="text-align: center;">
                     <textarea id="globalTask" placeholder="Taak voor iedereen..." style="width: 90%; resize: none;"></textarea>
-                </th>
+                </td>
             </tr>
 
                 <?php while ($teacher = $result->fetch_assoc()): ?>
