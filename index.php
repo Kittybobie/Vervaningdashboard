@@ -120,13 +120,13 @@ $stmt->close();
         }
 
         .btn-day {
-            font-size: 12px; /* Kleinere tekst voor de knoppen */
-            padding: 6px 12px; /* Kleinere padding voor compactere knoppen */
+            font-size: 14px; /* Iets grotere tekst voor de knoppen */
+            padding: 10px 20px; /* Vergrote padding voor grotere knoppen */
             font-weight: bold;
-            border-radius: 6px; /* Kleinere radius voor een strakkere knop */
+            border-radius: 8px; /* Kleinere radius voor een strakkere knop */
             transition: all 0.3s ease-in-out;
             width: auto; /* De breedte past zich aan de tekst aan */
-            margin: 0 10px; /* Ruimte tussen de knoppen */
+            margin: 0 20px; /* Vergrote marge aan beide kanten voor meer ruimte */
         }
 
         .btn-day:hover {
