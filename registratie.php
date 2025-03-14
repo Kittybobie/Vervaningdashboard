@@ -63,13 +63,12 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
                 }
 
                 if ($hour === 1) { // Zorgt ervoor dat het maar één keer gebeurt per leraar per dag
-                    $temp_value = get_some_value(); // Add this line to get the value
                     $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND record_date = ?";
                     $delete_stmt = $conn->prepare($delete_sql);
                     
                     if ($delete_stmt) {
                         // Adjust the bind_param to include $temp_value if needed
-                        $delete_stmt->bind_param("iss", $temp_value, $selected_day, $selected_date_formatted);
+                        $delete_stmt->bind_param("ss",$selected_day, $selected_date_formatted);
                         $delete_stmt->execute();
                         $delete_stmt->close();
                     } else {
