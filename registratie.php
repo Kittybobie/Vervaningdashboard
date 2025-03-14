@@ -1,90 +1,67 @@
 <?php
 include 'config.php'; // Zorgt dat de databaseconnectie wordt ingeladen
 session_start();
-// Databaseverbinding
+
+// Controleer databaseverbinding
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    die("Verbinding mislukt: " . $conn->connect_error);
 }
 
-// Verwerk formulier indien ingediend
-$tasks = [];
-$reden = [];
+// Definieer de dagen correct
+$dagen_mapping = [
+    'Maandag' => 'Monday',
+    'Dinsdag' => 'Tuesday',
+    'Woensdag' => 'Wednesday',
+    'Donderdag' => 'Thursday',
+    'Vrijdag' => 'Friday'
+];
 
-// Definieer de dagen van de week correct
-$days_of_week = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag'];
+// Verkrijg de geselecteerde dag
+$selected_day = $_SESSION['selected_day'] ?? 'Maandag';
 
-// Controleer of een dag geselecteerd is, zo niet, standaard naar Maandag
-if (!isset($_SESSION['selected_day'])) {
-    $_SESSION['selected_day'] = 'Maandag';
-}
-$selected_day = $_SESSION['selected_day'];
-
-// Controleer of de gebruiker een andere dag heeft gekozen
+// Als er een POST-verzoek is om de dag te wijzigen
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['day'])) {
     $_SESSION['selected_day'] = $_POST['day'];
     $selected_day = $_POST['day'];
 }
 
-// Verkrijg de geselecteerde dag uit de sessie
-$selected_day = $_SESSION['selected_day'] ?? '';
+// **Converteer de dag naar een geldige datum van deze week**
+if (isset($dagen_mapping[$selected_day])) {
+    $selected_date = new DateTime('this week ' . $dagen_mapping[$selected_day]);
+    $selected_date_formatted = $selected_date->format('Y-m-d');
+} else {
+    die("Ongeldige dag geselecteerd.");
+}
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    // Sla de geselecteerde dag op in de sessie
-    if (isset($_POST['day'])) {
-        $_SESSION['selected_day'] = $_POST['day'];  // Bewaar de geselecteerde dag in de sessie
-        $selected_day = $_SESSION['selected_day']; // Update de lokale variabele
-    }
-    
-// Verwerk aanwezigheid
-if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
+// ✅ **Verwerk aanwezigheid**
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['leraar_id'])) {
     $teacher_ids = $_POST['leraar_id'];
     $status = $_POST['status'] ?? [];
 
     foreach ($teacher_ids as $leraar_id) {
-        // ✅ Stap 1: Haal de juiste dag op en formatteer de datum
-        $dagen_mapping = ['Maandag' => 'Monday', 'Dinsdag' => 'Tuesday', 'Woensdag' => 'Wednesday', 'Donderdag' => 'Thursday', 'Vrijdag' => 'Friday'];
-
-        if (isset($dagen_mapping[$selected_day])) {
-            $selected_day_formatted = ucfirst(strtolower($selected_day)); // Opslaan als correcte string
-            $selected_date = new DateTime('this week ' . $dagen_mapping[$selected_day]);
-            $selected_date_formatted = $selected_date->format('Y-m-d');
-        } else {
-            die("Ongeldige dag geselecteerd.");
-        }
-
-        // ✅ Stap 2: Verwijder de gegevens één keer per leraar per dag (niet 8 keer!)
+        // **Verwijder bestaande records voor deze leraar op deze dag**
         $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND record_date = ?";
         $delete_stmt = $conn->prepare($delete_sql);
         if ($delete_stmt) {
-            $delete_stmt->bind_param("iss", $leraar_id, $selected_day_formatted, $selected_date_formatted);
+            $delete_stmt->bind_param("iss", $leraar_id, $selected_day, $selected_date_formatted);
             $delete_stmt->execute();
             $delete_stmt->close();
-        } else {
-            error_log("Delete failed: " . $conn->error);
         }
 
+        // **Loop door de lesuren en sla enkel relevante records op**
         for ($hour = 1; $hour <= 8; $hour++) {
             $current_status = $status[$leraar_id][$hour] ?? 'aanwezig';
             $current_reden = $_POST['reden'][$leraar_id][$hour] ?? null;
             $current_tasks = $_POST['tasks'][$leraar_id][$hour] ?? null;
 
-            if (empty($current_reden)) {
-                $current_reden = NULL;
-            }
-            if (empty($current_tasks)) {
-                $current_tasks = NULL;
-            }
-
-            // ✅ Stap 4: Controleer of de status 'afwezig' of iets anders is voordat je opslaat
+            // **Sla alleen op als de status 'afwezig' of 'in vergadering' is**
             if ($current_status !== 'aanwezig') {
-                $today_date = date('Y-m-d'); // Huidige datum als `date`
                 $insert_sql = "INSERT INTO attendance (teacher_id, date, record_date, day, hour, status, reason, tasks) 
-                               VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                               VALUES (?, CURDATE(), ?, ?, ?, ?, ?, ?)";
                 $insert_stmt = $conn->prepare($insert_sql);
 
                 if ($insert_stmt) {
-                    $insert_stmt->bind_param("ississss", $leraar_id, $today_date, $selected_date_formatted, $selected_day_formatted, $hour, $current_status, $current_reden, $current_tasks);
+                    $insert_stmt->bind_param("ississs", $leraar_id, $selected_date_formatted, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
                     $insert_stmt->execute();
                     $insert_stmt->close();
                 } else {
@@ -95,8 +72,8 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
     }
 }
 
-
-
+// Sluit databaseverbinding
+$conn->close();
 
     // Zoek leerkrachten
     if (isset($_POST['search'])) {
@@ -112,7 +89,7 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
     } else {
         // failure
     }
-}
+
 ?>
 
 <!DOCTYPE html>
