@@ -32,17 +32,15 @@ $current_day_index = array_search($selected_day, $days_of_week);
 $previous_day = $days_of_week[($current_day_index - 1 + count($days_of_week)) % count($days_of_week)];
 $next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
 
-// SQL-query: filteren op de kolom `day` i.p.v. `date`
-$sql = "SELECT t.name AS teacher_name,
-               a.day,
-               a.hour,
-               a.status,
-               a.reason,
-               a.tasks
+$sql = "SELECT t.name AS teacher_name, a.day, a.hour, a.status, a.reason, a.tasks, a.record_date 
         FROM attendance a
         JOIN teachers t ON a.teacher_id = t.id
-        WHERE a.day = ?
+        WHERE a.day = ? AND a.record_date = ?
         ORDER BY a.hour ASC";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ss", $selected_day, $selected_date_formatted);
+
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $selected_day);
@@ -63,7 +61,7 @@ $stmt->close();
     <title>Vervangingen - Aanwezigheidsdashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
+                body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(to right, rgba(29, 54, 96, 0.4), rgba(50, 90, 160, 0.4)), 
                         url('pop-bg.jpg') no-repeat center center fixed;
@@ -171,7 +169,7 @@ $stmt->close();
             <button type="submit" name="day" value="<?php echo $previous_day; ?>" class="btn btn-outline-primary btn-day">&#8592; Vorige Dag</button>
         </form>
 
-        <h2><?php echo htmlspecialchars($selected_day); ?></h2>
+        <h2><?php echo htmlspecialchars($selected_day) . " - " . htmlspecialchars($selected_date_formatted); ?></h2>
 
         <form method="POST" action="">
             <button type="submit" name="day" value="<?php echo $next_day; ?>" class="btn btn-outline-primary btn-day">Volgende Dag &#8594;</button>

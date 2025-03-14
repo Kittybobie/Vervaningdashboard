@@ -69,8 +69,15 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
 
             // ✅ Stap 2: Voeg de nieuwe invoer toe als het NIET "aanwezig" is
             if ($current_status !== 'aanwezig') {
-                $insert_sql = "INSERT INTO attendance (teacher_id, date, day, hour, status, reason, tasks) 
-                               VALUES (?, CURDATE(), ?, ?, ?, ?, ?)";
+                $selected_date = new DateTime(); 
+                    $selected_date->modify('this week ' . strtolower($selected_day)); // Haalt juiste datum op
+                    $selected_date_formatted = $selected_date->format('Y-m-d');
+
+                    $insert_sql = "INSERT INTO attendance (teacher_id, record_date, day, hour, status, reason, tasks) 
+                                VALUES (?, ?, ?, ?, ?, ?, ?)";
+                    $insert_stmt = $conn->prepare($insert_sql);
+                    $insert_stmt->bind_param("ississs", $leraar_id, $selected_date_formatted, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
+
                 $insert_stmt = $conn->prepare($insert_sql);
                 if ($insert_stmt) {
                     $insert_stmt->bind_param("isisss", $leraar_id, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
