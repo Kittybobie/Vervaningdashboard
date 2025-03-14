@@ -69,9 +69,14 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
 
             // ✅ Stap 2: Voeg de nieuwe invoer toe als het NIET "aanwezig" is
             if ($current_status !== 'aanwezig') {
-                $selected_date = new DateTime(); 
-                    $selected_date->modify('this week ' . strtolower($selected_day)); // Haalt juiste datum op
+                $dagen = ['Maandag' => 'Monday', 'Dinsdag' => 'Tuesday', 'Woensdag' => 'Wednesday', 'Donderdag' => 'Thursday', 'Vrijdag' => 'Friday'];
+                if (isset($dagen[$selected_day])) {
+                    $selected_date = new DateTime('this week ' . $dagen[$selected_day]);
                     $selected_date_formatted = $selected_date->format('Y-m-d');
+                } else {
+                    die("Ongeldige dag geselecteerd.");
+                }
+
 
                     $insert_sql = "INSERT INTO attendance (teacher_id, record_date, day, hour, status, reason, tasks) 
                                 VALUES (?, ?, ?, ?, ?, ?, ?)";

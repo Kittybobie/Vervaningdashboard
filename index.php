@@ -40,11 +40,8 @@ $sql = "SELECT t.name AS teacher_name, a.day, a.hour, a.status, a.reason, a.task
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ss", $selected_day, $selected_date_formatted);
-
-
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $selected_day);
 $stmt->execute();
+
 $result = $stmt->get_result();
 
 $data = [];
