@@ -95,7 +95,7 @@ $stmt->close();
         }
         h1 {
             color: #1d3660;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: bold;
             text-align: center;
             margin-bottom: 10px;
@@ -175,9 +175,10 @@ $stmt->close();
             }
             .btn-day {
                 width: 100%; /* Buttons take full width on small screens */
+                margin-bottom: 10px;
             }
             h1 {
-                font-size: 24px;
+                font-size: 22px;
             }
             h2 {
                 font-size: 18px;
