@@ -193,10 +193,10 @@ $stmt->close();
                 text-align: center;
             }
             .btn-day {
-                width: 45%; /* Knoppen zijn groter op grotere schermen */
+                width: 45%; /* Knoppen zijn zoals voorheen, groot genoeg */
             }
             table {
-                max-width: 900px; /* Beperk de breedte van de tabel op grotere schermen */
+                max-width: 800px; /* Beperk de breedte van de tabel op grotere schermen */
                 margin: 0 auto; /* Centreer de tabel */
             }
         }
