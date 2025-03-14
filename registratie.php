@@ -206,6 +206,39 @@ input[type="text"]:focus {
     transition: all 0.3s ease-in-out;
 }
 
+#suggestions {
+    border: 1px solid #ccc;
+    max-height: 200px;
+    overflow-y: auto;
+    position: absolute;
+    background: white;
+    z-index: 1000;
+    width: 100%;
+    margin-top: 2px; /* Zorgt voor een kleine scheiding */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+}
+
+.suggestion-item {
+    padding: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.suggestion-item:hover {
+    background-color: #1d3660; /* Donkere kleur voor hover */
+    color: white;
+}
+
+#teacher_search {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border 0.3s ease-in-out;
+}
+
 .btn-zoeken:hover {
     background: #14284b; /* Donkerdere tint */
 }
