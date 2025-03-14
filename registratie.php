@@ -148,12 +148,29 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
         }
         /* Day Selection Buttons */
         .btn-day {
-            display: inline-block;
-            width: 18%;
-            margin: 5px;
-            text-align: center;
-            font-size: 14px;
-            border-radius: 8px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease-in-out;
+            font-weight: 600;
+            box-shadow: 0 3px 8px rgba(0, 123, 255, 0.3);
+        }
+
+        .btn-day:hover {
+            background: #0056b3;
+            box-shadow: 0 5px 12px rgba(0, 123, 255, 0.4);
+        }
+
+        .active-day {
+            background-color: #ffcc00 !important;
+            color: black !important;
+            font-weight: bold;
+            border: 2px solid #ff9900;
+            box-shadow: 0 3px 12px rgba(255, 204, 0, 0.6);
         }
         /* Search Input */
         input[type="text"] {
@@ -285,11 +302,12 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
 
     <!-- Keuze voor de dag -->
     <form method="POST">
-        <button type="submit" name="day" class="btn-day" value="Maandag">Maandag</button>
-        <button type="submit" name="day" class="btn-day" value="Dinsdag">Dinsdag</button>
-        <button type="submit" name="day" class="btn-day" value="Woensdag">Woensdag</button>
-        <button type="submit" name="day" class="btn-day" value="Donderdag">Donderdag</button>
-        <button type="submit" name="day" class="btn-day" value="Vrijdag">Vrijdag</button>
+        <?php foreach ($days_of_week as $day): ?>
+            <button type="submit" name="day" value="<?php echo $day; ?>"
+                class="btn btn-day <?php echo ($selected_day === $day) ? 'active-day' : ''; ?>">
+                <?php echo $day; ?>
+            </button>
+        <?php endforeach; ?>
     </form>
 
     <!-- Zoekformulier -->
