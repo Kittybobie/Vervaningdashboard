@@ -112,7 +112,7 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
     <style>
 body {
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(to right, rgba(29, 54, 96, 0.8), rgba(50, 90, 160, 0.8)), 
+    background: linear-gradient(to right, rgba(29, 54, 96, 0.4), rgba(50, 90, 160, 0.4)), 
                 url('pop-bg.jpg') no-repeat center center fixed;
     background-size: cover;
     color: #333;
