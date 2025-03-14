@@ -19,39 +19,7 @@ $days_of_week = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag'];
 if (!isset($_SESSION['selected_day'])) {
     $_SESSION['selected_day'] = 'Maandag';
 }
-// Haal de huidige datum op
-$today = new DateTime();
-$today->setTime(0, 0, 0); // Zet tijd op middernacht om fouten te vermijden
-
-// Bepaal de dag van vandaag (1 = maandag, 7 = zondag)
-$current_weekday = $today->format('N');
-
-// Definieer de weekdagen en hun nummer
-$week_days = [
-    'Maandag'   => 1,
-    'Dinsdag'   => 2,
-    'Woensdag'  => 3,
-    'Donderdag' => 4,
-    'Vrijdag'   => 5
-];
-
-// Controleer of de geselecteerde dag correct bestaat
-if (isset($week_days[$selected_day])) {
-    // Bereken hoeveel dagen we terug moeten gaan naar het begin van de week (maandag)
-    $monday = clone $today;
-    $monday->modify('-' . ($current_weekday - 1) . ' days'); // Ga terug naar maandag van deze week
-
-    // Voeg dagen toe afhankelijk van de geselecteerde dag
-    $selected_date = clone $monday;
-    $selected_date->modify('+' . ($week_days[$selected_day] - 1) . ' days');
-
-    // Formatteer de datum als YYYY-MM-DD
-    $selected_date_formatted = $selected_date->format('Y-m-d');
-} else {
-    $selected_date_formatted = $today->format('Y-m-d'); // Fallback naar vandaag
-}
-
-
+$selected_day = $_SESSION['selected_day'];
 
 // Controleer of er een POST-verzoek is gedaan om de dag te wijzigen
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['day'])) {
@@ -202,7 +170,9 @@ $stmt->close();
         <form method="POST" action="">
             <button type="submit" name="day" value="<?php echo $previous_day; ?>" class="btn btn-outline-primary btn-day">&#8592; Vorige Dag</button>
         </form>
-        <h2><?php echo htmlspecialchars($selected_day) . " - " . $selected_date_formatted; ?></h2>
+
+        <h2><?php echo htmlspecialchars($selected_day); ?></h2>
+
         <form method="POST" action="">
             <button type="submit" name="day" value="<?php echo $next_day; ?>" class="btn btn-outline-primary btn-day">Volgende Dag &#8594;</button>
         </form>
