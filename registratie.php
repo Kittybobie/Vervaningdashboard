@@ -54,20 +54,22 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
                 $current_tasks = NULL;
             }
 
-            $dagen = ['Maandag' => 'Monday', 'Dinsdag' => 'Tuesday', 'Woensdag' => 'Wednesday', 'Donderdag' => 'Thursday', 'Vrijdag' => 'Friday'];
-                if (isset($dagen[$selected_day])) {
-                    $selected_date = new DateTime('this week ' . $dagen[$selected_day]);
+            $dagen_mapping = ['Maandag' => 'Monday', 'Dinsdag' => 'Tuesday', 'Woensdag' => 'Wednesday', 'Donderdag' => 'Thursday', 'Vrijdag' => 'Friday'];
+
+                if (isset($dagen_mapping[$selected_day])) {
+                    $selected_day_formatted = $selected_day; // Opslaan als correcte string
+                    $selected_date = new DateTime('this week ' . $dagen_mapping[$selected_day]);
                     $selected_date_formatted = $selected_date->format('Y-m-d');
                 } else {
                     die("Ongeldige dag geselecteerd.");
                 }
                 $selected_day_formatted = ucfirst(strtolower($selected_day));
-                if ($hour === 1) { // Zorgt ervoor dat het maar één keer gebeurt per leraar per dag
+                // Stap 1: Verwijder ALLE records voor deze leraar en deze dag (voorkomt duplicaten)
+                if ($hour === 1) { // Alleen 1x per dag verwijderen
                     $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND record_date = ?";
                     $delete_stmt = $conn->prepare($delete_sql);
                     
                     if ($delete_stmt) {
-                        // Adjust the bind_param to include $temp_value if needed
                         $delete_stmt->bind_param("iss", $leraar_id, $selected_day_formatted, $selected_date_formatted);
                         $delete_stmt->execute();
                         $delete_stmt->close();
@@ -75,6 +77,7 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
                         error_log("Delete failed: " . $conn->error);
                     }
                 }
+
 
           
             if ($current_status !== 'aanwezig') {
@@ -89,6 +92,7 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
                     $current_tasks = $current_tasks ?? "";
                     
                     $insert_stmt->bind_param("ississss", $leraar_id, $today_date, $selected_date_formatted, $selected_day_formatted, $hour, $current_status, $current_reden, $current_tasks);
+
                     $insert_stmt->execute();
                     $insert_stmt->close();
                 } else {
