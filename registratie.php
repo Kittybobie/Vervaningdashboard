@@ -61,14 +61,14 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
                 } else {
                     die("Ongeldige dag geselecteerd.");
                 }
-
+                $selected_day_formatted = ucfirst(strtolower($selected_day));
                 if ($hour === 1) { // Zorgt ervoor dat het maar één keer gebeurt per leraar per dag
                     $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND record_date = ?";
                     $delete_stmt = $conn->prepare($delete_sql);
                     
                     if ($delete_stmt) {
                         // Adjust the bind_param to include $temp_value if needed
-                        $delete_stmt->bind_param("iss", $leraar_id, ucfirst(strtolower($selected_day)), $selected_date_formatted);
+                        $delete_stmt->bind_param("iss", $leraar_id, $selected_day_formatted, $selected_date_formatted);
                         $delete_stmt->execute();
                         $delete_stmt->close();
                     } else {
@@ -88,7 +88,7 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
                     $current_reden = $current_reden ?? "";
                     $current_tasks = $current_tasks ?? "";
                     
-                    $insert_stmt->bind_param("ississss", $leraar_id, $today_date, $selected_date_formatted, ucfirst(strtolower($selected_day)), $hour, $current_status, $current_reden, $current_tasks);
+                    $insert_stmt->bind_param("ississss", $leraar_id, $today_date, $selected_date_formatted, $selected_day_formatted, $hour, $current_status, $current_reden, $current_tasks);
                     $insert_stmt->execute();
                     $insert_stmt->close();
                 } else {
