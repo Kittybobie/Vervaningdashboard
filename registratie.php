@@ -85,7 +85,7 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
 
                 $insert_stmt = $conn->prepare($insert_sql);
                 if ($insert_stmt) {
-                    $insert_stmt->bind_param("isisss", $leraar_id, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
+                    $insert_stmt->bind_param("ississs", $leraar_id, $selected_date_formatted, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
                     $insert_stmt->execute();
                     $insert_stmt->close();
                 } else {

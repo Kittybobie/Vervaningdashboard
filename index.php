@@ -32,6 +32,19 @@ $current_day_index = array_search($selected_day, $days_of_week);
 $previous_day = $days_of_week[($current_day_index - 1 + count($days_of_week)) % count($days_of_week)];
 $next_day = $days_of_week[($current_day_index + 1) % count($days_of_week)];
 
+$dagen = ['Maandag' => 'Monday', 'Dinsdag' => 'Tuesday', 'Woensdag' => 'Wednesday', 'Donderdag' => 'Thursday', 'Vrijdag' => 'Friday'];
+
+if (isset($dagen[$selected_day])) {
+    try {
+        $selected_date = new DateTime('this week ' . $dagen[$selected_day]);
+        $selected_date_formatted = $selected_date->format('Y-m-d');
+    } catch (Exception $e) {
+        $selected_date_formatted = date('Y-m-d'); // Valt terug op de huidige datum als er een fout is
+    }
+} else {
+    $selected_date_formatted = date('Y-m-d'); // Standaard naar vandaag als iets fout gaat
+}
+
 $sql = "SELECT t.name AS teacher_name, a.day, a.hour, a.status, a.reason, a.tasks, a.record_date 
         FROM attendance a
         JOIN teachers t ON a.teacher_id = t.id
@@ -166,7 +179,8 @@ $stmt->close();
             <button type="submit" name="day" value="<?php echo $previous_day; ?>" class="btn btn-outline-primary btn-day">&#8592; Vorige Dag</button>
         </form>
 
-        <h2><?php echo htmlspecialchars($selected_day) . " - " . htmlspecialchars($selected_date_formatted); ?></h2>
+        <h2><?php echo htmlspecialchars($selected_day) . " - " . htmlspecialchars($selected_date_formatted ?? 'Geen datum beschikbaar'); ?></h2>
+
 
         <form method="POST" action="">
             <button type="submit" name="day" value="<?php echo $next_day; ?>" class="btn btn-outline-primary btn-day">Volgende Dag &#8594;</button>
