@@ -42,7 +42,7 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
     $status = $_POST['status'] ?? [];
 
     foreach ($teacher_ids as $index => $leraar_id) {
-        for ($hour = 1; $hour <= 8; $hour++) {
+        for($hour = 1; $hour <= 8; $hour++ ) {
             $current_status = $status[$leraar_id][$hour] ?? 'aanwezig';
             $current_reden = $_POST['reden'][$leraar_id][$hour] ?? null;
             $current_tasks = $_POST['tasks'][$leraar_id][$hour] ?? null;
@@ -54,12 +54,21 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
                 $current_tasks = NULL;
             }
 
+            $dagen = ['Maandag' => 'Monday', 'Dinsdag' => 'Tuesday', 'Woensdag' => 'Wednesday', 'Donderdag' => 'Thursday', 'Vrijdag' => 'Friday'];
+                if (isset($dagen[$selected_day])) {
+                    $selected_date = new DateTime('this week ' . $dagen[$selected_day]);
+                    $selected_date_formatted = $selected_date->format('Y-m-d');
+                } else {
+                    die("Ongeldige dag geselecteerd.");
+                }
+
             // ✅ Stap 1: Verwijder ALLE records voor deze leraar en deze DAG (voorkomt duplicaten)
             if ($hour === 1) { // Zorgt ervoor dat het maar één keer gebeurt per leraar per dag
-                $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND date = CURDATE()";
+                $delete_sql = "DELETE FROM attendance WHERE teacher_id = ? AND day = ? AND record_date = ?";
                 $delete_stmt = $conn->prepare($delete_sql);
+                $delete_stmt->bind_param("iss", $leraar_id, $selected_day, $selected_date_formatted);
                 if ($delete_stmt) {
-                    $delete_stmt->bind_param("is", $leraar_id, $selected_day);
+                    $delete_stmt->bind_param("is", $leraar_id, ucfirst(strtolower($selected_day)));
                     $delete_stmt->execute();
                     $delete_stmt->close();
                 } else {
@@ -69,31 +78,23 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
 
           
             if ($current_status !== 'aanwezig') {
-                $dagen = ['Maandag' => 'Monday', 'Dinsdag' => 'Tuesday', 'Woensdag' => 'Wednesday', 'Donderdag' => 'Thursday', 'Vrijdag' => 'Friday'];
-                if (isset($dagen[$selected_day])) {
-                    $selected_date = new DateTime('this week ' . $dagen[$selected_day]);
-                    $selected_date_formatted = $selected_date->format('Y-m-d');
-                } else {
-                    die("Ongeldige dag geselecteerd.");
-                }
 
                 $today_date = date('Y-m-d'); // Huidige datum als `date`
                 $insert_sql = "INSERT INTO attendance (teacher_id, date, record_date, day, hour, status, reason, tasks) 
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
                 $insert_stmt = $conn->prepare($insert_sql);
-                $insert_stmt->bind_param("ississss", $leraar_id, $today_date, $selected_date_formatted, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
-
-                if ($insert_stmt = $conn->prepare($insert_sql)) {
+                if ($insert_stmt) {
                     $current_reden = $current_reden ?? "";
                     $current_tasks = $current_tasks ?? "";
-                
-                    $insert_stmt->bind_param("ississss", $leraar_id, $today_date, $selected_date_formatted, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
+                    
+                    $insert_stmt->bind_param("ississss", $leraar_id, $today_date, $selected_date_formatted, ucfirst(strtolower($selected_day)), $hour, $current_status, $current_reden, $current_tasks);
                     $insert_stmt->execute();
                     $insert_stmt->close();
                 } else {
                     error_log("Insert failed: " . $conn->error);
                 }
+
             }
         }
     }
