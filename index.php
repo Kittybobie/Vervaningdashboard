@@ -116,7 +116,7 @@ $stmt->close();
         }
         .btn-day {
             font-size: 10px; /* Nog kleinere tekst voor de knoppen */
-            padding: 4px 8px; /* Kleinere padding om de knoppen compacter te maken */
+            padding: 8px 12px; /* Kleinere padding om de knoppen compacter te maken */
             font-weight: bold;
             border-radius: 6px; /* Kleinere radius voor een strakkere knop */
             transition: all 0.3s ease-in-out;
@@ -209,7 +209,7 @@ $stmt->close();
 
     <!-- Knoppen aan de zijkanten van de datum -->
     <div class="day-nav">
-        <form method="POST" action="" style="display: flex; justify-content: space-between; width: 100%;">
+        <form method="POST" action="" style="display: flex; justify-content: space-between; width: 40%;">
             <button type="submit" name="day" value="<?php echo $previous_day; ?>" class="btn btn-outline-primary btn-day">&#8592; Vorige Dag</button>
             <h2><?php echo htmlspecialchars($selected_day) . " - " . htmlspecialchars($selected_date_formatted ?? 'Geen datum beschikbaar'); ?></h2>
             <button type="submit" name="day" value="<?php echo $next_day; ?>" class="btn btn-outline-primary btn-day">Volgende Dag &#8594;</button>
