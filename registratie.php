@@ -91,8 +91,6 @@ if ($row['total'] == 0) {
     $conn->query($sql_reset_auto_increment);
 }
 
-// **Sluit databaseverbinding**
-$conn->close();
 ?>
 
 
