@@ -68,7 +68,7 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
                     
                     if ($delete_stmt) {
                         // Adjust the bind_param to include $temp_value if needed
-                        $delete_stmt->bind_param("ss",$selected_day, $selected_date_formatted);
+                        $delete_stmt->bind_param("iss", $leraar_id, ucfirst(strtolower($selected_day)), $selected_date_formatted);
                         $delete_stmt->execute();
                         $delete_stmt->close();
                     } else {
