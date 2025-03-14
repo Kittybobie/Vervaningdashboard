@@ -112,17 +112,27 @@ $stmt->close();
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            flex-wrap: wrap;
+            width: 100%;
         }
+
         .btn-day {
-            align-items: center;
-            font-size: 10px; /* Nog kleinere tekst voor de knoppen */
-            padding: 8px 12px; /* Kleinere padding om de knoppen compacter te maken */
+            font-size: 12px; /* Kleinere tekst voor de knoppen */
+            padding: 6px 12px; /* Kleinere padding voor compactere knoppen */
             font-weight: bold;
-            border-radius: 6px; /* Kleinere radius voor een strakkere knop */
+            border-radius: 6px;
             transition: all 0.3s ease-in-out;
             width: auto; /* De breedte past zich aan de tekst aan */
-            margin: 0 12px; /* Kleiner marge aan beide kanten */
+            margin: 0 10px; /* Ruimte tussen de knoppen */
+        }
+
+        .btn-day:hover {
+            background-color: #1d3660;
+            color: white;
+        }
+
+        .date-container {
+            flex-grow: 1;
+            text-align: center;
         }
         .btn-day:hover {
             background-color: #1d3660;
@@ -210,12 +220,20 @@ $stmt->close();
 
     <!-- Knoppen aan de zijkanten van de datum -->
     <div class="day-nav">
-        <form method="POST" action="" style="display: flex; justify-content: space-between; width: 40%;">
+        <form method="POST" action="" style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+            <!-- Knop voor de vorige dag -->
             <button type="submit" name="day" value="<?php echo $previous_day; ?>" class="btn btn-outline-primary btn-day">&#8592; Vorige Dag</button>
-            <h2><?php echo htmlspecialchars($selected_day) . " - " . htmlspecialchars($selected_date_formatted ?? 'Geen datum beschikbaar'); ?></h2>
+
+            <!-- Datum in het midden -->
+            <div class="date-container">
+                <h2><?php echo htmlspecialchars($selected_day) . " - " . htmlspecialchars($selected_date_formatted ?? 'Geen datum beschikbaar'); ?></h2>
+            </div>
+
+            <!-- Knop voor de volgende dag -->
             <button type="submit" name="day" value="<?php echo $next_day; ?>" class="btn btn-outline-primary btn-day">Volgende Dag &#8594;</button>
         </form>
     </div>
+
 
     <div class="table-responsive">
         <table class="table table-bordered align-middle">
