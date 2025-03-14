@@ -67,7 +67,7 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
                 }
             }
 
-            // ✅ Stap 2: Voeg de nieuwe invoer toe als het NIET "aanwezig" is
+          
             if ($current_status !== 'aanwezig') {
                 $dagen = ['Maandag' => 'Monday', 'Dinsdag' => 'Tuesday', 'Woensdag' => 'Wednesday', 'Donderdag' => 'Thursday', 'Vrijdag' => 'Friday'];
                 if (isset($dagen[$selected_day])) {
@@ -79,16 +79,16 @@ if (isset($_POST['leraar_id']) && is_array($_POST['leraar_id'])) {
 
                 $today_date = date('Y-m-d'); // Huidige datum als `date`
                 $insert_sql = "INSERT INTO attendance (teacher_id, date, record_date, day, hour, status, reason, tasks) 
-                               VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
                 $insert_stmt = $conn->prepare($insert_sql);
                 $insert_stmt->bind_param("ississss", $leraar_id, $today_date, $selected_date_formatted, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
-                
 
                 $insert_stmt = $conn->prepare($insert_sql);
                 if ($insert_stmt) {
                     $current_reden = $current_reden ?? "";
                     $current_tasks = $current_tasks ?? "";
-                    $insert_stmt->bind_param("ississs", $leraar_id, $selected_date_formatted, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
+                    $insert_stmt->bind_param("ississss", $leraar_id, $today_date, $selected_date_formatted, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
 
                     $insert_stmt->execute();
                     $insert_stmt->close();
