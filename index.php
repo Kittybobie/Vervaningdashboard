@@ -116,7 +116,7 @@ $stmt->close();
         }
         .btn-day {
             font-size: 16px;
-            padding: 10px 15px;
+            padding: 12px 20px;
             font-weight: bold;
             border-radius: 8px;
             transition: all 0.3s ease-in-out;
@@ -174,7 +174,7 @@ $stmt->close();
                 text-align: center;
             }
             .btn-day {
-                width: 100%; /* Buttons take full width on small screens */
+                width: 100%; /* Knoppen nemen de volledige breedte in beslag */
                 margin-bottom: 10px;
             }
             h1 {
@@ -185,6 +185,19 @@ $stmt->close();
             }
             th, td {
                 padding: 10px;
+            }
+        }
+        @media (min-width: 769px) {
+            .day-nav {
+                justify-content: center;
+                text-align: center;
+            }
+            .btn-day {
+                width: 45%; /* Knoppen zijn groter op grotere schermen */
+            }
+            table {
+                max-width: 900px; /* Beperk de breedte van de tabel op grotere schermen */
+                margin: 0 auto; /* Centreer de tabel */
             }
         }
     </style>
@@ -198,7 +211,12 @@ $stmt->close();
         <form method="POST" action="">
             <button type="submit" name="day" value="<?php echo $previous_day; ?>" class="btn btn-outline-primary btn-day">&#8592; Vorige Dag</button>
         </form>
-        <h2><?php echo htmlspecialchars($selected_day) . " - " . htmlspecialchars($selected_date_formatted ?? 'Geen datum beschikbaar'); ?></h2>
+    </div>
+
+    <!-- Datum onder de knoppen -->
+    <h2><?php echo htmlspecialchars($selected_day) . " - " . htmlspecialchars($selected_date_formatted ?? 'Geen datum beschikbaar'); ?></h2>
+
+    <div class="day-nav">
         <form method="POST" action="">
             <button type="submit" name="day" value="<?php echo $next_day; ?>" class="btn btn-outline-primary btn-day">Volgende Dag &#8594;</button>
         </form>
