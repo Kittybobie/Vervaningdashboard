@@ -115,6 +115,7 @@ $stmt->close();
             flex-wrap: wrap;
         }
         .btn-day {
+            align-items: center;
             font-size: 10px; /* Nog kleinere tekst voor de knoppen */
             padding: 8px 12px; /* Kleinere padding om de knoppen compacter te maken */
             font-weight: bold;
