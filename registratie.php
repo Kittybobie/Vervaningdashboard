@@ -317,21 +317,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php if (isset($result) && $result->num_rows > 0): ?>
         <form method="POST">
             <table>
-                <tr>
-                    <th>Naam</th>
-                    <th>Lesuur</th>
-                    <!-- Aangepaste code: Checkbox naast "Status" -->
-                    <th style="text-align: center;">
-                        Statsu <br>
-                        <label for="setAllAbsent" style="display: inline-flex; align-items: center; gap: 5px; font-size: 14px; font-weight: normal; cursor: pointer; margin-top: 5px;">
-                            <input type="checkbox" name="Alles-afwezig" id="setAllAbsent" style="transform: scale(1.2); cursor: pointer;">
-                            Volledige dag afwezig
-                        </label>
-                    </th>
+            <tr>
+                <th style="text-align: center; vertical-align: middle;">NAAM</th>
+                <th style="text-align: center; vertical-align: middle;">LESUUR</th>
+                <th style="text-align: center; vertical-align: middle;">
+                    STATUS <br>
+                    <label for="setAllAbsent" style="display: inline-flex; align-items: center; gap: 5px; font-size: 14px; font-weight: normal; cursor: pointer; margin-top: 5px;">
+                        <input type="checkbox" id="setAllAbsent" style="transform: scale(1.2); cursor: pointer;">
+                        Volledige dag afwezig
+                    </label>
+                </th>
+                <th style="text-align: center; vertical-align: middle;">
+                    REDEN <br>
+                    <textarea id="globalReason" placeholder="Reden voor iedereen..." style="width: 90%; resize: none;"></textarea>
+                </th>
+                <th style="text-align: center; vertical-align: middle;">
+                    TAAK <br>
+                    <textarea id="globalTask" placeholder="Taak voor iedereen..." style="width: 90%; resize: none;"></textarea>
+                </th>
+            </tr>
 
-                    <th>Reden</th>
-                    <th>Taak</th>
-                </tr>
                 <?php while ($teacher = $result->fetch_assoc()): ?>
                     <?php for ($hour = 1; $hour <= 8; $hour++): ?>
                         <tr>
@@ -349,10 +354,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </select>
                             </td>
                             <td>
-                                <textarea name='reden[<?php echo $teacher['id']; ?>][<?php echo $hour; ?>]' placeholder='Reden (optioneel)'></textarea>
+                                <textarea name='reden[<?php echo $teacher['id']; ?>][<?php echo $hour; ?>]' class='reason-field' placeholder='Reden (optioneel)'></textarea>
                             </td>
                             <td>
-                                <textarea name='tasks[<?php echo $teacher['id']; ?>][<?php echo $hour; ?>]' placeholder='Taak (optioneel)'></textarea>
+                                <textarea name='tasks[<?php echo $teacher['id']; ?>][<?php echo $hour; ?>]' class='task-field' placeholder='Taak (optioneel)'></textarea>
                             </td>
                         </tr>
                     <?php endfor; ?>
@@ -365,7 +370,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 </div>
 
-
 <script>
 document.getElementById("setAllAbsent").addEventListener("change", function() {
     let statusDropdowns = document.querySelectorAll(".status-dropdown");
@@ -374,7 +378,26 @@ document.getElementById("setAllAbsent").addEventListener("change", function() {
         dropdown.value = setToAbsent ? "afwezig" : "aanwezig";
     });
 });
+
+// Vul alle "Reden" velden met de invoer van het globale tekstvak
+document.getElementById("globalReason").addEventListener("input", function() {
+    let allReasonFields = document.querySelectorAll(".reason-field");
+    let reasonText = this.value;
+    allReasonFields.forEach(field => {
+        field.value = reasonText;
+    });
+});
+
+// Vul alle "Taak" velden met de invoer van het globale tekstvak
+document.getElementById("globalTask").addEventListener("input", function() {
+    let allTaskFields = document.querySelectorAll(".task-field");
+    let taskText = this.value;
+    allTaskFields.forEach(field => {
+        field.value = taskText;
+    });
+});
 </script>
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
