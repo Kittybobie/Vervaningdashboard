@@ -19,7 +19,32 @@ $days_of_week = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag'];
 if (!isset($_SESSION['selected_day'])) {
     $_SESSION['selected_day'] = 'Maandag';
 }
-$selected_day = $_SESSION['selected_day'];
+// Haal de huidige datum op
+$today = new DateTime();
+$today->setTime(0, 0, 0); // Zorgt ervoor dat de tijd op middernacht staat
+
+// Bepaal de weekdag van vandaag (1 = maandag, 7 = zondag)
+$current_weekday = $today->format('N');
+
+// Definieer de weekdagen en hun nummer
+$week_days = [
+    'Maandag'   => 1,
+    'Dinsdag'   => 2,
+    'Woensdag'  => 3,
+    'Donderdag' => 4,
+    'Vrijdag'   => 5
+];
+
+// Controleer of de geselecteerde dag bestaat in de array
+if (isset($week_days[$selected_day])) {
+    // Bereken de datum van de geselecteerde dag
+    $selected_date = clone $today;
+    $selected_date->modify('-' . ($current_weekday - $week_days[$selected_day]) . ' days');
+    $selected_date_formatted = $selected_date->format('Y-m-d'); // Formaat: 2024-03-11
+} else {
+    $selected_date_formatted = $today->format('Y-m-d'); // Fallback naar vandaag
+}
+
 
 // Controleer of er een POST-verzoek is gedaan om de dag te wijzigen
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['day'])) {
@@ -171,7 +196,8 @@ $stmt->close();
             <button type="submit" name="day" value="<?php echo $previous_day; ?>" class="btn btn-outline-primary btn-day">&#8592; Vorige Dag</button>
         </form>
 
-        <h2><?php echo htmlspecialchars($selected_day); ?></h2>
+        <h2><?php echo htmlspecialchars($selected_day) . " - " . $selected_date_formatted; ?></h2>
+
 
         <form method="POST" action="">
             <button type="submit" name="day" value="<?php echo $next_day; ?>" class="btn btn-outline-primary btn-day">Volgende Dag &#8594;</button>
