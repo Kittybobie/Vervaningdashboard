@@ -54,15 +54,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['leraar_id'])) {
             $current_status = $status[$leraar_id][$hour] ?? 'aanwezig';
             $current_reden = $_POST['reden'][$leraar_id][$hour] ?? null;
             $current_tasks = $_POST['tasks'][$leraar_id][$hour] ?? null;
+            $current_class = $_POST['class'][$leraar_id][$hour] ?? null;
 
             // **Sla alleen op als de status 'afwezig' of 'in vergadering' is**
             if ($current_status !== 'aanwezig') {
-                $insert_sql = "INSERT INTO attendance (teacher_id, date, record_date, day, hour, status, reason, tasks) 
-                               VALUES (?, CURDATE(), ?, ?, ?, ?, ?, ?)";
+                $insert_sql = "INSERT INTO attendance (teacher_id, date, record_date, day, hour, status, reason, tasks, class) 
+                               VALUES (?, CURDATE(), ?, ?, ?, ?, ?, ?, ?)";
                 $insert_stmt = $conn->prepare($insert_sql);
-
+            
                 if ($insert_stmt) {
-                    $insert_stmt->bind_param("ississs", $leraar_id, $selected_date_formatted, $selected_day, $hour, $current_status, $current_reden, $current_tasks);
+                    $insert_stmt->bind_param("ississss", $leraar_id, $selected_date_formatted, $selected_day, $hour, $current_status, $current_reden, $current_tasks, $current_class);
                     $insert_stmt->execute();
                     $insert_stmt->close();
                 } else {
@@ -334,7 +335,7 @@ textarea:focus {
 
 <div class="container">
     <h1>Aanwezigheidsregistratie</h1>
-    <li style= align-items:right;><a href="delete.php">Leerkrachten</a></li>
+    <p style= "align-items:right; text-align:right;"><a href="delete.php">Leerkrachten</a></p>
 
     <div class="day-selection">
         <form method="POST">
@@ -365,6 +366,7 @@ textarea:focus {
                 <th style="text-align: center; vertical-align: middle;">NAAM</th>
                 <th style="text-align: center; vertical-align: middle;">LESUUR</th>
                 <th style="text-align: center; vertical-align: middle;">STATUS</th>
+                <th style="text-align: center; vertical-align: middle;">Klas</th>
                 <th style="text-align: center; vertical-align: middle;">REDEN</th>
                 <th style="text-align: center; vertical-align: middle;">TAAK</th>
 
@@ -402,6 +404,9 @@ textarea:focus {
                                     <option value='afwezig'>Afwezig</option>
                                     <option value='in vergadering'>In vergadering</option>
                                 </select>
+                            </td>
+                            <td>
+                                <textarea name='class[<?php echo $teacher['id']; ?>][<?php echo $hour; ?>]' class='class-field' placeholder='Klas (optioneel)'></textarea>
                             </td>
                             <td>
                                 <textarea name='reden[<?php echo $teacher['id']; ?>][<?php echo $hour; ?>]' class='reason-field' placeholder='Reden (optioneel)'></textarea>

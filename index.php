@@ -47,7 +47,7 @@ if (isset($dagen[$selected_day])) {
 }
 
 
-$sql = "SELECT t.name AS teacher_name, a.day, a.hour, a.status, a.reason, a.tasks, a.record_date 
+$sql = "SELECT t.name AS teacher_name, a.day, a.hour, a.status, a.class, a.reason, a.tasks, a.record_date 
         FROM attendance a
         JOIN teachers t ON a.teacher_id = t.id
         WHERE a.day = ? AND a.record_date = ?
@@ -257,6 +257,7 @@ $stmt->close();
                     <th>Naam</th>
                     <th>Lesuur</th>
                     <th>Status</th>
+                    <th>Klas</th>
                     <th>Reden</th>
                     <th>Taak</th>
                 </tr>
@@ -289,6 +290,7 @@ $stmt->close();
                                             <?php endif; ?>
                                             <td>Lesuur <?php echo htmlspecialchars($lesson['hour'] ?? ''); ?></td>
                                             <td><?php echo htmlspecialchars($lesson['status'] ?? 'Onbekend'); ?></td>
+                                            <td><?php echo htmlspecialchars($lesson['class'] ?? '-'); ?></td>
                                             <td><?php echo htmlspecialchars($lesson['reason'] ?? '-'); ?></td>
                                             <td><?php echo htmlspecialchars($lesson['tasks'] ?? '-'); ?></td>
                                         </tr>

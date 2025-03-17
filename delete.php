@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
 }
 
 // **Fetch attendance records of teachers**
-$sql = "SELECT a.id, t.name, a.hour, a.status, a.reason, a.tasks
+$sql = "SELECT a.id, t.name, a.hour, a.status, a.reason, a.tasks, a.class
         FROM attendance a
         JOIN teachers t ON a.teacher_id = t.id"; // Join attendance with teachers
 $result = $conn->query($sql);
@@ -129,6 +129,7 @@ $result = $conn->query($sql);
                 <th>Naam</th>
                 <th>Lesuur</th>
                 <th>Status</th>
+                <th>Klas</th>
                 <th>Reden</th>
                 <th>Taken</th>
                 <th>Verwijder</th>
@@ -140,6 +141,9 @@ $result = $conn->query($sql);
                         <td><?php echo htmlspecialchars($row['name']); ?></td>
                         <td><?php echo htmlspecialchars($row['hour']); ?></td>
                         <td><?php echo htmlspecialchars($row['status']); ?></td>
+                        <td>
+                            <input type="text" name="attendance[<?php echo htmlspecialchars($row['id']); ?>][class]" value="<?php echo htmlspecialchars($row['class']); ?>">
+                        </td>
                         <td>
                             <input type="text" name="attendance[<?php echo htmlspecialchars($row['id']); ?>][reason]" value="<?php echo htmlspecialchars($row['reason']); ?>">
                         </td>
