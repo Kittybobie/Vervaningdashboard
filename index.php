@@ -174,7 +174,7 @@ $stmt->close();
 
         @media (max-width: 768px) {
         .container {
-            width: 90%;
+            width: 100%;
             padding: 15px;
         }
         .day-nav {
@@ -182,14 +182,14 @@ $stmt->close();
             text-align: center;
         }
         .btn-day {
-            width: 100%;
-            margin: 5px 0;
+            width: 90%;
+            margin: 5px 5px;
             font-size: 14px;
             padding: 10px;
         }
         .date-container h2 {
             font-size: 18px;
-            margin: 10px 0;
+            margin: 10px 2px;
         }
         .table-responsive {
             overflow-x: auto;
@@ -215,7 +215,7 @@ $stmt->close();
         .btn-day {
             font-size: 16px;
             padding: 10px 20px;
-            margin: 0 10px;
+            margin: 5px; 10px;
         }
         .table-responsive {
             max-width: 100%;
