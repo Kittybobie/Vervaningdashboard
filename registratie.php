@@ -354,7 +354,7 @@ if ($row['total'] == 0) {
 <div class="header-container">
     <h1 class="header-title">Aanwezigheidsregistratie</h1>
     <p class="header-button">
-        <a href="delete.php" class="btn btn-day">Leerkrachten</a>
+        <a href="delete.php" class="btn btn-day">Wijzigen</a>
     </p>
 </div>
 
