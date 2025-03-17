@@ -401,6 +401,7 @@ if ($row['total'] == 0) {
                         Volledige dag afwezig
                     </label>
                 </td>
+                <td style="text-align: center; font-weight: bold;">-</td>
                 <td style="text-align: center;">
                     <textarea id="globalReason" placeholder="Reden voor iedereen..." style="width: 90%; resize: none; "></textarea>
                 </td>
