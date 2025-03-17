@@ -21,10 +21,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     }
 }
 
-// **Haal alle leerkrachten op met hun lesuren**
+// **Haal alleen de leerkrachten op die zijn toegevoegd in registratie.php met hun lesuren**
 $sql = "SELECT t.id, t.name, l.hour, l.subject 
         FROM teachers t 
-        LEFT JOIN lessons l ON t.id = l.teacher_id";
+        LEFT JOIN lessons l ON t.id = l.teacher_id
+        WHERE t.id IS NOT NULL"; // Zorg ervoor dat je alleen leerkrachten ophaalt die bestaan
 $result = $conn->query($sql);
 ?>
 
