@@ -131,6 +131,14 @@ if ($row['total'] == 0) {
             font-size: 26px;
             font-weight: 700;
             margin-bottom: 15px;
+            display:inline;
+        }
+
+        .btn-next2{
+            margin-left:30px;
+            text-align:center;
+            align-items:center;
+            display:inline;
         }
 
         /* Dag selectie knoppen */
@@ -313,18 +321,6 @@ if ($row['total'] == 0) {
 
         .btn-primary:hover {
             background: #14284b; /* Donkerdere tint */
-        }
-
-        .btn-next1{
-            text-align:center;
-            display:inline;
-        }
-
-        .btn-next2{
-            margin-left:30px;
-            text-align:center;
-            align-items:center;
-            display:inline;
         }
 
         /* Responsiviteit */
