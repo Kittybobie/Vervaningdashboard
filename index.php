@@ -97,7 +97,7 @@ $stmt->close();
 
         h1 {
             color: #1d3660;
-            font-size: 21px;
+            font-size: 23px;
             font-weight: bold;
             text-align: center;
             margin-bottom: 10px;
@@ -105,7 +105,7 @@ $stmt->close();
 
         h2 {
             text-align: center;
-            font-size: 20px;
+            font-size: 19px;
             font-weight: bold;
             margin-top: 10px;
             color: #444;
