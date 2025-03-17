@@ -97,7 +97,7 @@ $stmt->close();
 
         h1 {
             color: #1d3660;
-            font-size: 26px;
+            font-size: 21px;
             font-weight: bold;
             text-align: center;
             margin-bottom: 10px;
