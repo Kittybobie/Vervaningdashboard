@@ -58,7 +58,7 @@ $result = $conn->query($sql);
             color: #333;
         }
         .container {
-            max-width: 950px;
+            max-width: 85%;
             margin: 50px auto;
             padding: 25px;
             background: #ffffff;
