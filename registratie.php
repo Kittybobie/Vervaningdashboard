@@ -316,10 +316,14 @@ if ($row['total'] == 0) {
         }
 
         .btn-next1{
+            text-align:center;
             display:inline;
         }
 
         .btn-next2{
+            margin-left:30px;
+            text-align:center;
+            align-items:center;
             display:inline;
         }
 
