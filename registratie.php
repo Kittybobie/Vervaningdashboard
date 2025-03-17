@@ -141,9 +141,8 @@ if ($row['total'] == 0) {
         }
 
         .header-title {
-            margin-left: 200px;
+            margin-left: 175px;
             text-align: center;
-            flex-grow: 1; /* Zorgt ervoor dat deze ruimte opvult */
         }
 
         .header-button {
