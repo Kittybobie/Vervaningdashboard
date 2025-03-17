@@ -334,10 +334,7 @@ textarea:focus {
 <body>
 
 <div class="container">
-    <h1>Aanwezigheidsregistratie</h1>
-    <p style="text-align:right;">
-        <a href="delete.php" class="btn btn-day">Leerkrachten</a>
-    </p>
+    <h1>Aanwezigheidsregistratie</h1><button style="text-align:right;"><a href="delete.php" class="btn btn-day">Leerkrachten</a></button>
 
     <div class="day-selection">
         <form method="POST">
