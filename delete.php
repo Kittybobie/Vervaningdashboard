@@ -1,31 +1,30 @@
 <?php
-include 'config.php'; // Laad databaseverbinding
+include 'config.php'; // Load DB connection
 session_start();
 
-// **Controleer databaseverbinding**
+// **Check database connection**
 if ($conn->connect_error) {
-    die("Verbinding mislukt: " . $conn->connect_error);
+    die("Connection failed: " . $conn->connect_error);
 }
 
-// **Verwerk delete-verzoek**
+// **Process delete request**
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $delete_id = intval($_POST['delete_id']);
-    $delete_sql = "DELETE FROM teachers WHERE id = ?";
+    $delete_sql = "DELETE FROM attendance WHERE id = ?";
     $delete_stmt = $conn->prepare($delete_sql);
     if ($delete_stmt) {
         $delete_stmt->bind_param("i", $delete_id);
         $delete_stmt->execute();
         $delete_stmt->close();
     } else {
-        die("Fout bij het verwijderen van de leerkracht: " . $conn->error);
+        die("Error deleting teacher attendance: " . $conn->error);
     }
 }
 
-// **Haal alleen de leerkrachten op die zijn toegevoegd in registratie.php met hun lesuren**
-$sql = "SELECT t.id, t.name, l.hour, l.subject 
-        FROM teachers t 
-        LEFT JOIN lessons l ON t.id = l.teacher_id
-        WHERE t.id IS NOT NULL"; // Zorg ervoor dat je alleen leerkrachten ophaalt die bestaan
+// **Fetch attendance records of teachers**
+$sql = "SELECT a.id, t.name, a.hour, a.status, a.reason
+        FROM attendance a
+        JOIN teachers t ON a.teacher_id = t.id"; // Join attendance with teachers
 $result = $conn->query($sql);
 ?>
 
@@ -104,7 +103,8 @@ $result = $conn->query($sql);
             <th>ID</th>
             <th>Naam</th>
             <th>Lesuur</th>
-            <th>Onderwerp</th>
+            <th>Status</th>
+            <th>Reden</th>
             <th>Acties</th>
         </tr>
         <?php if ($result->num_rows > 0): ?>
@@ -113,7 +113,8 @@ $result = $conn->query($sql);
                     <td><?php echo htmlspecialchars($row['id']); ?></td>
                     <td><?php echo htmlspecialchars($row['name']); ?></td>
                     <td><?php echo htmlspecialchars($row['hour']); ?></td>
-                    <td><?php echo htmlspecialchars($row['subject']); ?></td>
+                    <td><?php echo htmlspecialchars($row['status']); ?></td>
+                    <td><?php echo htmlspecialchars($row['reason']); ?></td>
                     <td>
                         <form method="POST" style="display:inline;">
                             <input type="hidden" name="delete_id" value="<?php echo htmlspecialchars($row['id']); ?>">
@@ -125,7 +126,7 @@ $result = $conn->query($sql);
             <?php endwhile; ?>
         <?php else: ?>
             <tr>
-                <td colspan="5">Geen leerkrachten gevonden.</td>
+                <td colspan="6">Geen leerkrachten gevonden.</td>
             </tr>
         <?php endif; ?>
     </table>
@@ -136,6 +137,6 @@ $result = $conn->query($sql);
 </html>
 
 <?php
-// Sluit de databaseverbinding
+// Close the database connection
 $conn->close();
 ?>
