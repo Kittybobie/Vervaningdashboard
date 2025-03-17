@@ -150,7 +150,6 @@ $result = $conn->query($sql);
                         </form>
                     </td>
                 </tr>
-                <button type="submit" class="btn-save">Opslaan</button>
             <?php endwhile; ?>
         <?php else: ?>
             <tr>
@@ -158,6 +157,7 @@ $result = $conn->query($sql);
             </tr>
         <?php endif; ?>
     </table>
+    <button type="submit" class="btn-save">Opslaan</button>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
