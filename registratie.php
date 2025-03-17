@@ -102,240 +102,248 @@ if ($row['total'] == 0) {
     <meta charset="UTF-8">
     <title>Aanwezigheidsdashboard</title>
     <style>
-body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(to right, rgba(29, 54, 96, 0.4), rgba(50, 90, 160, 0.4)), 
-                url('pop-bg.jpg') no-repeat center center fixed;
-    background-size: cover;
-    color: #333;
-    margin: 0;
-    padding: 0;
-}
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, rgba(29, 54, 96, 0.4), rgba(50, 90, 160, 0.4)), 
+                        url('pop-bg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
 
 
-/* Container */
-.container {
-    max-width: 950px;
-    margin: 50px auto;
-    padding: 25px;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease-in-out;
-}
+        /* Container */
+        .container {
+            max-width: 950px;
+            margin: 50px auto;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease-in-out;
+        }
 
-/* Header */
-h1 {
-    text-align: center;
-    color: #1d3660; /* Nieuwe kleur */
-    font-size: 26px;
-    font-weight: 700;
-    margin-bottom: 15px;
-}
+        /* Header */
+        h1 {
+            text-align: center;
+            color: #1d3660; /* Nieuwe kleur */
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
 
-/* Dag selectie knoppen */
-.day-selection {
-    display: flex;
-    justify-content: center; /* Centraal uitlijnen */
-    gap: 10px; /* Ruimte tussen de knoppen */
-    margin-bottom: 15px;
-}
+        /* Dag selectie knoppen */
+        .day-selection {
+            display: flex;
+            justify-content: center; /* Centraal uitlijnen */
+            gap: 10px; /* Ruimte tussen de knoppen */
+            margin-bottom: 15px;
+        }
 
-.btn-day {
-    background: #1d3660; /* Nieuwe kleur */
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 6px;
-    transition: all 0.3s ease-in-out;
-}
+        .btn-day {
+            background: #1d3660; /* Nieuwe kleur */
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            transition: all 0.3s ease-in-out;
+        }
 
-.btn-day:hover {
-    background: #14284b; /* Iets donkerdere variant */
-    color: white;
-    box-shadow: 0 5px 12px rgba(29, 54, 96, 0.4);
-}
+        .btn-day:hover {
+            background: #14284b; /* Iets donkerdere variant */
+            color: white;
+            box-shadow: 0 5px 12px rgba(29, 54, 96, 0.4);
+        }
 
-/* Actieve dag knop */
-.active-day {
-    background-color: #00fffb !important;
-    color: black !important;
-    font-weight: bold;
-    border: 2px solid #00fffb;
-    box-shadow: 0 3px 12px rgba(0, 255, 255, 0.6);
-}
+        /* Actieve dag knop */
+        .active-day {
+            background-color: #00fffb !important;
+            color: black !important;
+            font-weight: bold;
+            border: 2px solid #00fffb;
+            box-shadow: 0 3px 12px rgba(0, 255, 255, 0.6);
+        }
 
-/* Zoekveld */
-input[type="text"] {
-    width: calc(100% - 20px);
-    padding: 12px;
-    margin-top: 10px;
-    border: 2px solid #1d3660; /* Nieuwe kleur */
-    border-radius: 8px;
-    font-size: 14px;
-    transition: border 0.3s ease-in-out;
-}
+        /* Zoekveld */
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin-top: 10px;
+            border: 2px solid #1d3660; /* Nieuwe kleur */
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s ease-in-out;
+        }
 
-input[type="text"]:focus {
-    border: 2px solid #1d3660; /* Nieuwe kleur */
-    outline: none;
-}
+        input[type="text"]:focus {
+            border: 2px solid #1d3660; /* Nieuwe kleur */
+            outline: none;
+        }
 
-/* Zoekknop */
-.btn-zoeken {
-    width: 100%;
-    margin-top: 10px;
-    background: #1d3660; /* Nieuwe kleur */
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-}
+        /* Zoekknop */
+        .btn-zoeken {
+            width: 100%;
+            margin-top: 10px;
+            background: #1d3660; /* Nieuwe kleur */
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
 
-#suggestions {
-    border: 1px solid #ccc;
-    max-height: 200px;
-    overflow-y: auto;
-    position: absolute;
-    background: white;
-    z-index: 1000;
-    width: 100%;
-    margin-top: 2px; /* Zorgt voor een kleine scheiding */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 6px;
-}
+        #suggestions {
+            border: 1px solid #ccc;
+            max-height: 200px;
+            overflow-y: auto;
+            position: absolute;
+            background: white;
+            z-index: 1000;
+            width: 100%;
+            margin-top: 2px; /* Zorgt voor een kleine scheiding */
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+        }
 
-.suggestion-item {
-    padding: 12px;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-}
+        .suggestion-item {
+            padding: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
 
-.suggestion-item:hover {
-    background-color: #1d3660; /* Donkere kleur voor hover */
-    color: white;
-}
+        .suggestion-item:hover {
+            background-color: #1d3660; /* Donkere kleur voor hover */
+            color: white;
+        }
 
-#teacher_search {
-    width: 100%;
-    padding: 10px;
-    border: 2px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: border 0.3s ease-in-out;
-}
+        #teacher_search {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border 0.3s ease-in-out;
+        }
 
-.btn-zoeken:hover {
-    background: #14284b; /* Donkerdere tint */
-}
+        .btn-zoeken:hover {
+            background: #14284b; /* Donkerdere tint */
+        }
 
-/* Tabel */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    font-size: 15px;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    table-layout: fixed;
-}
+        /* Tabel */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 15px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            table-layout: fixed;
+        }
 
-/* Tabel headers */
-th {
-    background: #1d3660; /* Nieuwe kleur */
-    color: white;
-    font-weight: bold;
-    text-transform: uppercase;
-    text-align: center;
-    vertical-align: middle;
-    padding: 12px;
-    font-size: 14px;
-}
+        /* Tabel headers */
+        th {
+            background: #1d3660; /* Nieuwe kleur */
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+            vertical-align: middle;
+            padding: 12px;
+            font-size: 14px;
+        }
 
-/* Algemene tabel styling */
-th, td {
-    padding: 14px;
-    text-align: center;
-    border: 1px solid #ddd;
-}
+        /* Algemene tabel styling */
+        th, td {
+            padding: 14px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
 
-select{
-    width: 100%; /* Volledige breedte van de cel */
-    border-radius: 8px; /* Afronding */
-    border: 2px solid #ccc; /* Zachte rand */
-    box-sizing: border-box; /* Zorgt ervoor dat padding en border niet de breedte beïnvloeden */
-    background: #FAFAFA; /* Lichtgrijze achtergrond */
-}
+        select{
+            width: 100%; /* Volledige breedte van de cel */
+            border-radius: 8px; /* Afronding */
+            border: 2px solid #ccc; /* Zachte rand */
+            box-sizing: border-box; /* Zorgt ervoor dat padding en border niet de breedte beïnvloeden */
+            background: #FAFAFA; /* Lichtgrijze achtergrond */
+        }
 
-select:focus {
-    border: 2px solid #1d3660; /* Donkerblauwe rand bij focus */
-    outline: none; /* Verwijdert de standaard blauwe highlight */
-}
+        select:focus {
+            border: 2px solid #1d3660; /* Donkerblauwe rand bij focus */
+            outline: none; /* Verwijdert de standaard blauwe highlight */
+        }
 
-textarea {
-    width: 100%; /* Volledige breedte van de cel */
-    min-height: 40px; /* Minimale hoogte */
-    border-radius: 8px; /* Afronding */
-    border: 2px solid #ccc; /* Zachte rand */
-    padding: 8px; /* Ruimte binnenin */
-    font-size: 14px;
-    resize: none; /* Gebruiker kan de grootte niet aanpassen */
-    box-sizing: border-box; /* Zorgt ervoor dat padding en border niet de breedte beïnvloeden */
-    background: #FAFAFA; /* Lichtgrijze achtergrond */
-}
+        textarea {
+            width: 100%; /* Volledige breedte van de cel */
+            min-height: 40px; /* Minimale hoogte */
+            border-radius: 8px; /* Afronding */
+            border: 2px solid #ccc; /* Zachte rand */
+            padding: 8px; /* Ruimte binnenin */
+            font-size: 14px;
+            resize: none; /* Gebruiker kan de grootte niet aanpassen */
+            box-sizing: border-box; /* Zorgt ervoor dat padding en border niet de breedte beïnvloeden */
+            background: #FAFAFA; /* Lichtgrijze achtergrond */
+        }
 
-textarea:focus {
-    border: 2px solid #1d3660; /* Donkerblauwe rand bij focus */
-    outline: none; /* Verwijdert de standaard blauwe highlight */
-}
+        textarea:focus {
+            border: 2px solid #1d3660; /* Donkerblauwe rand bij focus */
+            outline: none; /* Verwijdert de standaard blauwe highlight */
+        }
 
-/* Opslaan knop */
-.btn-primary {
-    width: 100%;
-    margin-top: 20px;
-    background: #1d3660; /* Nieuwe kleur */
-    color: white;
-    border: none;
-    padding: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-}
+        /* Opslaan knop */
+        .btn-primary {
+            width: 100%;
+            margin-top: 20px;
+            background: #1d3660; /* Nieuwe kleur */
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
 
-.btn-primary:hover {
-    background: #14284b; /* Donkerdere tint */
-}
+        .btn-primary:hover {
+            background: #14284b; /* Donkerdere tint */
+        }
 
-/* Responsiviteit */
-@media (max-width: 768px) {
-    .container {
-        width: 95%;
-        padding: 15px;
-    }
-    .btn-day {
-        width: 45%;
-    }
-    table {
-        font-size: 13px;
-    }
-}
+        .btn-next1{
+            display:inline;
+        }
+
+        .btn-next2{
+            display:inline;
+        }
+
+        /* Responsiviteit */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 15px;
+            }
+            .btn-day {
+                width: 45%;
+            }
+            table {
+                font-size: 13px;
+            }
+        }
 
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Aanwezigheidsregistratie</h1>
-    <p style="text-align:right;">
+    <h1 class="btn-next1" >Aanwezigheidsregistratie</h1>
+    <p class="btn-next2" style="text-align:right;">
         <a href="delete.php" class="btn btn-day">Leerkrachten</a>
     </p>
 
