@@ -125,6 +125,15 @@ if ($row['total'] == 0) {
         }
 
         /* Header */
+        h1 {
+            text-align: center;
+            color: #1d3660; /* Nieuwe kleur */
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display:inline;
+        }
+
         .header-container {
             display: flex;
             justify-content: space-between;
@@ -132,8 +141,6 @@ if ($row['total'] == 0) {
         }
 
         .header-title {
-            color: #1d3660;
-            font-size:24px;
             text-align: center;
             flex-grow: 1; /* Zorgt ervoor dat deze ruimte opvult */
         }
