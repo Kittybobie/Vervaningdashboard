@@ -265,7 +265,7 @@ $stmt->close();
             <tbody>
                 <?php if (empty($data)) : ?>
                     <tr>
-                        <td colspan="5" class="empty-message">Geen vervangingen vandaag</td>
+                        <td colspan="6" class="empty-message">Geen vervangingen vandaag</td>
                     </tr>
                 <?php else : ?>
                     <?php foreach ($data as $day => $teachers) : ?>
