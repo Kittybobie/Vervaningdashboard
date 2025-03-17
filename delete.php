@@ -100,9 +100,17 @@ $result = $conn->query($sql);
             background: #c82333;
         }
         .btn-save {
-            background: #28a745;
+            width: 100%;
+            margin-top: 20px;
+            background: #1d3660; /* Nieuwe kleur */
             color: white;
             border: none;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
         }
         .btn-save:hover {
             background: #218838;
