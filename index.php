@@ -173,49 +173,59 @@ $stmt->close();
         }
 
         @media (max-width: 768px) {
-            .container {
-                width: 100%;
-                padding: 15px;
-            }
-            table {
-                font-size: 13px;
-                display: block;
-                overflow-x: auto;
-            }
-            .day-nav {
-                justify-content: center;
-                text-align: center;
-            }
-            .btn-day {
-                width: 100%; /* Knoppen nemen de volledige breedte in beslag */
-                margin-bottom: 10px;
-            }
-            h1 {
-                font-size: 22px;
-            }
-            h2 {
-                font-size: 18px;
-            }
-            th, td {
-                padding: 10px;
-            }
+        .container {
+            width: 90%;
+            padding: 15px;
         }
+        .day-nav {
+            flex-direction: column;
+            text-align: center;
+        }
+        .btn-day {
+            width: 100%;
+            margin: 5px 0;
+            font-size: 14px;
+            padding: 10px;
+        }
+        .date-container h2 {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        table {
+            font-size: 14px;
+            display: block;
+            overflow-x: auto;
+        }
+        th, td {
+            padding: 10px;
+            font-size: 12px;
+            word-wrap: break-word;
+        }
+    }
 
-        @media (min-width: 769px) {
-            .day-nav {
-                justify-content: space-between;
-                align-items: center;
-            }
-            .btn-day {
-                width: auto; /* Knoppen blijven klein en passen zich aan de tekstgrootte aan */
-                margin: 0 10px; /* Ruimte tussen de knoppen */
-            }
-            table {
-                width: 100%; /* Zorg ervoor dat de tabel de volledige breedte benut zonder uit te rekken */
-                max-width: 100%; /* Beperk de breedte niet te veel, zodat de tekst goed leesbaar blijft */
-                margin: 0 auto; /* Centreer de tabel binnen de container */
-            }
+    @media (min-width: 769px) {
+        .day-nav {
+            justify-content: space-between;
+            align-items: center;
+            display: flex;
         }
+        .btn-day {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin: 0 10px;
+        }
+        .table-responsive {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+        }
+    }
+
     </style>
 </head>
 <body>
