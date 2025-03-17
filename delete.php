@@ -135,6 +135,11 @@ $result = $conn->query($sql);
                         <form method="POST" style="display:inline;">
                             <input type="text" name="reason" value="<?php echo htmlspecialchars($row['reason']); ?>">
                             <input type="hidden" name="update_id" value="<?php echo htmlspecialchars($row['id']); ?>">
+                        </form>
+                    </td>
+                    <td>
+                        <form method="POST" style="display:inline;">
+                            <input type="hidden" name="update_id" value="<?php echo htmlspecialchars($row['id']); ?>">
                             <input type="text" name="tasks" value="<?php echo htmlspecialchars($row['tasks']); ?>">
                         </form>
                     </td>
@@ -144,8 +149,8 @@ $result = $conn->query($sql);
                             <button type="submit" class="btn-delete">Verwijderen</button>
                         </form>
                     </td>
-                    <button type="submit" class="btn-save">Opslaan</button>
                 </tr>
+                <button type="submit" class="btn-save">Opslaan</button>
             <?php endwhile; ?>
         <?php else: ?>
             <tr>
