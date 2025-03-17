@@ -21,6 +21,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     }
 }
 
+// **Process update request**
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_id'])) {
+    $update_id = intval($_POST['update_id']);
+    $reason = $_POST['reason'];
+    $tasks = $_POST['tasks'];
+
+    $update_sql = "UPDATE attendance SET reason = ?, tasks = ? WHERE id = ?";
+    $update_stmt = $conn->prepare($update_sql);
+    if ($update_stmt) {
+        $update_stmt->bind_param("ssi", $reason, $tasks, $update_id);
+        $update_stmt->execute();
+        $update_stmt->close();
+    } else {
+        die("Error updating attendance: " . $conn->error);
+    }
+}
+
 // **Fetch attendance records of teachers**
 $sql = "SELECT a.id, t.name, a.hour, a.status, a.reason, a.tasks
         FROM attendance a
@@ -69,27 +86,26 @@ $result = $conn->query($sql);
             background: #1d3660;
             color: white;
         }
+        .btn-delete, .btn-save {
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
         .btn-delete {
             background: #dc3545;
             color: white;
             border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
         }
         .btn-delete:hover {
             background: #c82333;
         }
-        .btn-edit {
-            background: #007bff;
+        .btn-save {
+            background: #28a745;
             color: white;
             border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
         }
-        .btn-edit:hover {
-            background: #0056b3;
+        .btn-save:hover {
+            background: #218838;
         }
     </style>
 </head>
@@ -115,8 +131,14 @@ $result = $conn->query($sql);
                     <td><?php echo htmlspecialchars($row['name']); ?></td>
                     <td><?php echo htmlspecialchars($row['hour']); ?></td>
                     <td><?php echo htmlspecialchars($row['status']); ?></td>
-                    <td><input type="text" name="reden" value="<?php echo htmlspecialchars($row['reason']); ?>"></td>
-                    <td><input type="text" name="taak" value="<?php echo htmlspecialchars($row['tasks']); ?>"></td>
+                    <td>
+                        <form method="POST" style="display:inline;">
+                            <input type="text" name="reason" value="<?php echo htmlspecialchars($row['reason']); ?>">
+                            <input type="hidden" name="update_id" value="<?php echo htmlspecialchars($row['id']); ?>">
+                            <input type="text" name="tasks" value="<?php echo htmlspecialchars($row['tasks']); ?>">
+                            <button type="submit" class="btn-save">Opslaan</button>
+                        </form>
+                    </td>
                     <td>
                         <form method="POST" style="display:inline;">
                             <input type="hidden" name="delete_id" value="<?php echo htmlspecialchars($row['id']); ?>">
