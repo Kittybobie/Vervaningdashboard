@@ -106,6 +106,7 @@ $result = $conn->query($sql);
             <th>Status</th>
             <th>Reden</th>
             <th>Acties</th>
+            <th>Verwijder</th>
         </tr>
         <?php if ($result->num_rows > 0): ?>
             <?php while ($row = $result->fetch_assoc()): ?>
