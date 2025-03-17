@@ -121,7 +121,7 @@ $result = $conn->query($sql);
             <th>Lesuur</th>
             <th>Status</th>
             <th>Reden</th>
-            <th>Acties</th>
+            <th>Taken</th>
             <th>Verwijder</th>
         </tr>
         <?php if ($result->num_rows > 0): ?>
@@ -136,7 +136,6 @@ $result = $conn->query($sql);
                             <input type="text" name="reason" value="<?php echo htmlspecialchars($row['reason']); ?>">
                             <input type="hidden" name="update_id" value="<?php echo htmlspecialchars($row['id']); ?>">
                             <input type="text" name="tasks" value="<?php echo htmlspecialchars($row['tasks']); ?>">
-                            <button type="submit" class="btn-save">Opslaan</button>
                         </form>
                     </td>
                     <td>
@@ -145,6 +144,7 @@ $result = $conn->query($sql);
                             <button type="submit" class="btn-delete">Verwijderen</button>
                         </form>
                     </td>
+                    <button type="submit" class="btn-save">Opslaan</button>
                 </tr>
             <?php endwhile; ?>
         <?php else: ?>
