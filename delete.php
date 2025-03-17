@@ -21,8 +21,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     }
 }
 
-// **Haal alle leerkrachten op**
-$sql = "SELECT * FROM teachers";
+// **Haal alle leerkrachten op met hun lesuren**
+$sql = "SELECT t.id, t.name, l.hour, l.subject 
+        FROM teachers t 
+        LEFT JOIN lessons l ON t.id = l.teacher_id";
 $result = $conn->query($sql);
 ?>
 
@@ -78,6 +80,17 @@ $result = $conn->query($sql);
         .btn-delete:hover {
             background: #c82333;
         }
+        .btn-edit {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-edit:hover {
+            background: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -89,6 +102,8 @@ $result = $conn->query($sql);
         <tr>
             <th>ID</th>
             <th>Naam</th>
+            <th>Lesuur</th>
+            <th>Onderwerp</th>
             <th>Acties</th>
         </tr>
         <?php if ($result->num_rows > 0): ?>
@@ -96,17 +111,20 @@ $result = $conn->query($sql);
                 <tr>
                     <td><?php echo htmlspecialchars($row['id']); ?></td>
                     <td><?php echo htmlspecialchars($row['name']); ?></td>
+                    <td><?php echo htmlspecialchars($row['hour']); ?></td>
+                    <td><?php echo htmlspecialchars($row['subject']); ?></td>
                     <td>
                         <form method="POST" style="display:inline;">
                             <input type="hidden" name="delete_id" value="<?php echo htmlspecialchars($row['id']); ?>">
                             <button type="submit" class="btn-delete">Verwijderen</button>
                         </form>
+                        <a href="wijzig_leerkracht.php?id=<?php echo htmlspecialchars($row['id']); ?>" class="btn-edit">Wijzigen</a>
                     </td>
                 </tr>
             <?php endwhile; ?>
         <?php else: ?>
             <tr>
-                <td colspan="3">Geen leerkrachten gevonden.</td>
+                <td colspan="5">Geen leerkrachten gevonden.</td>
             </tr>
         <?php endif; ?>
     </table>
