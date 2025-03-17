@@ -87,7 +87,7 @@ $stmt->close();
         }
 
         .container {
-            max-width: 80%; /* Verhoogde breedte voor een bredere tabel, maar nog steeds binnen de container */
+            max-width: 87%; /* Verhoogde breedte voor een bredere tabel, maar nog steeds binnen de container */
             background-color: #ffffff;
             border-radius: 10px;
             padding: 25px;
@@ -97,7 +97,7 @@ $stmt->close();
 
         h1 {
             color: #1d3660;
-            font-size: 23px;
+            font-size: 24px;
             font-weight: bold;
             text-align: center;
             margin-bottom: 10px;
@@ -105,7 +105,7 @@ $stmt->close();
 
         h2 {
             text-align: center;
-            font-size: 19px;
+            font-size: 20px;
             font-weight: bold;
             margin-top: 10px;
             color: #444;

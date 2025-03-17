@@ -334,6 +334,7 @@ textarea:focus {
 
 <div class="container">
     <h1>Aanwezigheidsregistratie</h1>
+    <li style= align-items:right;><a href="leerkrachten.php">Leerkrachten</a></li>
 
     <div class="day-selection">
         <form method="POST">
@@ -366,6 +367,7 @@ textarea:focus {
                 <th style="text-align: center; vertical-align: middle;">STATUS</th>
                 <th style="text-align: center; vertical-align: middle;">REDEN</th>
                 <th style="text-align: center; vertical-align: middle;">TAAK</th>
+
             </tr>
 
             <!-- Extra rij onder de header voor globale instellingen -->
