@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
 }
 
 // **Fetch attendance records of teachers**
-$sql = "SELECT a.id, t.name, a.hour, a.status, a.reason
+$sql = "SELECT a.id, t.name, a.hour, a.status, a.reason, a.taak
         FROM attendance a
         JOIN teachers t ON a.teacher_id = t.id"; // Join attendance with teachers
 $result = $conn->query($sql);
@@ -114,13 +114,13 @@ $result = $conn->query($sql);
                     <td><?php echo htmlspecialchars($row['name']); ?></td>
                     <td><?php echo htmlspecialchars($row['hour']); ?></td>
                     <td><?php echo htmlspecialchars($row['status']); ?></td>
-                    <td><?php echo htmlspecialchars($row['reason']); ?></td>
+                    <td><input type="text" name="reden" value="<?php echo htmlspecialchars($row['reason']); ?>"></td>
+                    <td><input type="text" name="taak" value="<?php echo htmlspecialchars($row['taak']); ?>"></td>
                     <td>
                         <form method="POST" style="display:inline;">
                             <input type="hidden" name="delete_id" value="<?php echo htmlspecialchars($row['id']); ?>">
                             <button type="submit" class="btn-delete">Verwijderen</button>
                         </form>
-                        <a href="wijzig_leerkracht.php?id=<?php echo htmlspecialchars($row['id']); ?>" class="btn-edit">Wijzigen</a>
                     </td>
                 </tr>
             <?php endwhile; ?>
