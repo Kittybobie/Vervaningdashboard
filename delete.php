@@ -158,7 +158,7 @@ $result = $conn->query($sql);
                 <?php endwhile; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="6">Geen leerkrachten gevonden.</td>
+                    <td colspan="8">Geen leerkrachten gevonden.</td>
                 </tr>
             <?php endif; ?>
         </table>

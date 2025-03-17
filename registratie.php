@@ -335,7 +335,9 @@ textarea:focus {
 
 <div class="container">
     <h1>Aanwezigheidsregistratie</h1>
-    <p style= "align-items:right; text-align:right;"><a href="delete.php">Leerkrachten</a></p>
+    <p style="text-align:right;">
+        <a href="delete.php" class="btn btn-day">Leerkrachten</a>
+    </p>
 
     <div class="day-selection">
         <form method="POST">
@@ -347,7 +349,6 @@ textarea:focus {
             <?php endforeach; ?>
         </form>
     </div>
-
 
     <!-- Zoekformulier -->
     <div class="search-container show" style="position: relative;">
