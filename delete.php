@@ -22,19 +22,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
 }
 
 // **Process update request**
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_id'])) {
-    $update_id = intval($_POST['update_id']);
-    $reason = $_POST['reason'];
-    $tasks = $_POST['tasks'];
-
-    $update_sql = "UPDATE attendance SET reason = ?, tasks = ? WHERE id = ?";
-    $update_stmt = $conn->prepare($update_sql);
-    if ($update_stmt) {
-        $update_stmt->bind_param("ssi", $reason, $tasks, $update_id);
-        $update_stmt->execute();
-        $update_stmt->close();
-    } else {
-        die("Error updating attendance: " . $conn->error);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
+    foreach ($_POST['attendance'] as $id => $attendance) {
+        $update_sql = "UPDATE attendance SET reason = ?, tasks = ? WHERE id = ?";
+        $update_stmt = $conn->prepare($update_sql);
+        if ($update_stmt) {
+            $reason = $attendance['reason'];
+            $tasks = $attendance['tasks'];
+            $update_stmt->bind_param("ssi", $reason, $tasks, $id);
+            $update_stmt->execute();
+            $update_stmt->close();
+        } else {
+            die("Error updating attendance: " . $conn->error);
+        }
     }
 }
 
@@ -122,51 +122,43 @@ $result = $conn->query($sql);
 <div class="container">
     <h1>Leerkrachtenlijst</h1>
 
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Naam</th>
-            <th>Lesuur</th>
-            <th>Status</th>
-            <th>Reden</th>
-            <th>Taken</th>
-            <th>Verwijder</th>
-        </tr>
-        <?php if ($result->num_rows > 0): ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($row['id']); ?></td>
-                    <td><?php echo htmlspecialchars($row['name']); ?></td>
-                    <td><?php echo htmlspecialchars($row['hour']); ?></td>
-                    <td><?php echo htmlspecialchars($row['status']); ?></td>
-                    <td>
-                        <form method="POST" style="display:inline;">
-                            <input type="text" name="reason" value="<?php echo htmlspecialchars($row['reason']); ?>">
-                            <input type="hidden" name="update_id" value="<?php echo htmlspecialchars($row['id']); ?>">
-                        </form>
-                    </td>
-                    <td>
-                        <form method="POST" style="display:inline;">
-                            <input type="hidden" name="update_id" value="<?php echo htmlspecialchars($row['id']); ?>">
-                            <input type="text" name="tasks" value="<?php echo htmlspecialchars($row['tasks']); ?>">
-                        </form>
-                    </td>
-                    <td>
-                        <form method="POST" style="display:inline;">
+    <form method="POST">
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Naam</th>
+                <th>Lesuur</th>
+                <th>Status</th>
+                <th>Reden</th>
+                <th>Taken</th>
+                <th>Verwijder</th>
+            </tr>
+            <?php if ($result->num_rows > 0): ?>
+                <?php while ($row = $result->fetch_assoc()): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($row['id']); ?></td>
+                        <td><?php echo htmlspecialchars($row['name']); ?></td>
+                        <td><?php echo htmlspecialchars($row['hour']); ?></td>
+                        <td><?php echo htmlspecialchars($row['status']); ?></td>
+                        <td>
+                            <input type="text" name="attendance[<?php echo htmlspecialchars($row['id']); ?>][reason]" value="<?php echo htmlspecialchars($row['reason']); ?>">
+                        </td>
+                        <td>
+                            <input type="text" name="attendance[<?php echo htmlspecialchars($row['id']); ?>][tasks]" value="<?php echo htmlspecialchars($row['tasks']); ?>">
+                        </td>
+                        <td>
                             <input type="hidden" name="delete_id" value="<?php echo htmlspecialchars($row['id']); ?>">
                             <button type="submit" class="btn-delete">Verwijderen</button>
-                        </form>
-                    </td>
+                        </td>
+                    </tr>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="6">Geen leerkrachten gevonden.</td>
                 </tr>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <tr>
-                <td colspan="6">Geen leerkrachten gevonden.</td>
-            </tr>
-        <?php endif; ?>
-    </table>
-    <form method="POST" style="display:inline;">
-        <button type="submit" class="btn-save">Opslaan</button>
+            <?php endif; ?>
+        </table>
+        <button type="submit" name="update" class="btn-save">Opslaan</button>
     </form>
 </div>
 
