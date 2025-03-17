@@ -132,6 +132,8 @@ if ($row['total'] == 0) {
         }
 
         .header-title {
+            color: #1d3660;
+            font-size:24px;
             text-align: center;
             flex-grow: 1; /* Zorgt ervoor dat deze ruimte opvult */
         }
