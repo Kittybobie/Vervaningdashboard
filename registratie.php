@@ -125,20 +125,19 @@ if ($row['total'] == 0) {
         }
 
         /* Header */
-        h1 {
-            text-align: center;
-            color: #1d3660; /* Nieuwe kleur */
-            font-size: 26px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            display:inline;
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Centraal uitlijnen */
         }
 
-        .btn-next2{
-            margin-left:30px;
-            text-align:center;
-            align-items:center;
-            display:inline;
+        .header-title {
+            text-align: center;
+            flex-grow: 1; /* Zorgt ervoor dat deze ruimte opvult */
+        }
+
+        .header-button {
+            margin-left: 20px; /* Ruimte tussen de titel en de knop */
         }
 
         /* Dag selectie knoppen */
@@ -342,10 +341,12 @@ if ($row['total'] == 0) {
 <body>
 
 <div class="container">
-    <h1 class="btn-next1" >Aanwezigheidsregistratie</h1>
-    <p class="btn-next2" style="text-align:right;">
+<div class="header-container">
+    <h1 class="header-title">Aanwezigheidsregistratie</h1>
+    <p class="header-button">
         <a href="delete.php" class="btn btn-day">Leerkrachten</a>
     </p>
+</div>
 
     <div class="day-selection">
         <form method="POST">
