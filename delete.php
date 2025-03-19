@@ -151,8 +151,10 @@ $result = $conn->query($sql);
                             <input type="text" name="attendance[<?php echo htmlspecialchars($row['id']); ?>][tasks]" value="<?php echo htmlspecialchars($row['tasks']); ?>">
                         </td>
                         <td>
-                            <input type="hidden" name="delete_id" value="<?php echo htmlspecialchars($row['id']); ?>">
-                            <button type="submit" class="btn-delete">Verwijderen</button>
+                            <form method="POST">
+                                <input type="hidden" name="delete_id" value="<?php echo htmlspecialchars($row['id']); ?>">
+                                <button type="submit" class="btn-delete">Verwijderen</button>
+                            </form>
                         </td>
                     </tr>
                 <?php endwhile; ?>
