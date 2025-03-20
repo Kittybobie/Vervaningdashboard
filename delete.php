@@ -1,13 +1,13 @@
 <?php
-include 'config.php'; // Load DB connection
+include 'config.php';
 session_start();
 
-// **Check database connection**
+
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// **Process delete request**
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $delete_id = intval($_POST['delete_id']);
     $delete_sql = "DELETE FROM attendance WHERE id = ?";
@@ -21,15 +21,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     }
 }
 
-// **Process update request**
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
     foreach ($_POST['attendance'] as $id => $attendance) {
-        $update_sql = "UPDATE attendance SET reason = ?, tasks = ? WHERE id = ?";
+        $update_sql = "UPDATE attendance SET reason = ?, tasks = ?, class = ?, day = ? WHERE id = ?";
         $update_stmt = $conn->prepare($update_sql);
         if ($update_stmt) {
             $reason = $attendance['reason'];
             $tasks = $attendance['tasks'];
-            $update_stmt->bind_param("ssi", $reason, $tasks, $id);
+            $class = $attendance['class'];
+            $day = $attendance['day'];
+            $update_stmt->bind_param("ssssi", $reason, $tasks, $class, $day, $id);
             $update_stmt->execute();
             $update_stmt->close();
         } else {
@@ -38,10 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
     }
 }
 
-// **Fetch attendance records of teachers**
-$sql = "SELECT a.id, t.name, a.hour, a.status, a.reason, a.tasks, a.class
+
+$sql = "SELECT a.id, t.name, a.hour, a.status, a.reason, a.tasks, a.class, a.day
         FROM attendance a
-        JOIN teachers t ON a.teacher_id = t.id"; // Join attendance with teachers
+        JOIN teachers t ON a.teacher_id = t.id";
 $result = $conn->query($sql);
 ?>
 
@@ -102,7 +104,7 @@ $result = $conn->query($sql);
         .btn-save {
             width: 100%;
             margin-top: 20px;
-            background: #1d3660; /* Nieuwe kleur */
+            background: #1d3660;
             color: white;
             border: none;
             padding: 12px;
@@ -127,6 +129,7 @@ $result = $conn->query($sql);
             <tr>
                 <th>ID</th>
                 <th>Naam</th>
+                <th>Dag</th>
                 <th>Lesuur</th>
                 <th>Status</th>
                 <th>Klas</th>
@@ -139,6 +142,7 @@ $result = $conn->query($sql);
                     <tr>
                         <td><?php echo htmlspecialchars($row['id']); ?></td>
                         <td><?php echo htmlspecialchars($row['name']); ?></td>
+                        <td><?php echo htmlspecialchars($row['day']); ?></td>
                         <td><?php echo htmlspecialchars($row['hour']); ?></td>
                         <td><?php echo htmlspecialchars($row['status']); ?></td>
                         <td>
@@ -160,7 +164,7 @@ $result = $conn->query($sql);
                 <?php endwhile; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="8">Geen leerkrachten gevonden.</td>
+                    <td colspan="9">Geen leerkrachten gevonden.</td>
                 </tr>
             <?php endif; ?>
         </table>
@@ -173,6 +177,6 @@ $result = $conn->query($sql);
 </html>
 
 <?php
-// Close the database connection
+
 $conn->close();
 ?>
