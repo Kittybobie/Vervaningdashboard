@@ -128,53 +128,52 @@ $result = $conn->query($sql);
     <h1>Leerkrachtenlijst</h1>
 
     <form method="POST">
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Naam</th>
-                <th>Dag</th>
-                <th>Lesuur</th>
-                <th>Status</th>
-                <th>Klas</th>
-                <th>Reden</th>
-                <th>Taken</th>
-                <th>Verwijder</th>
-            </tr>
-            <?php if ($result->num_rows > 0): ?>
-                <?php while ($row = $result->fetch_assoc()): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($row['id']); ?></td>
-                        <td><?php echo htmlspecialchars($row['name']); ?></td>
-                        <td>
-                            <input type="text" name="attendance[<?php echo htmlspecialchars($row['id']); ?>][day]" value="<?php echo htmlspecialchars($row['day']); ?>">
-                        </td>
-                        <td><?php echo htmlspecialchars($row['hour']); ?></td>
-                        <td><?php echo htmlspecialchars($row['status']); ?></td>
-                        <td>
-                            <input type="text" name="attendance[<?php echo htmlspecialchars($row['id']); ?>][class]" value="<?php echo htmlspecialchars($row['class']); ?>">
-                        </td>
-                        <td>
-                            <input type="text" name="attendance[<?php echo htmlspecialchars($row['id']); ?>][reason]" value="<?php echo htmlspecialchars($row['reason']); ?>">
-                        </td>
-                        <td>
-                            <input type="text" name="attendance[<?php echo htmlspecialchars($row['id']); ?>][tasks]" value="<?php echo htmlspecialchars($row['tasks']); ?>">
-                        </td>
-                        <td>
-                            <form method="POST">
-                                <input type="hidden" name="delete_id" value="<?php echo htmlspecialchars($row['id']); ?>">
-                                <button type="submit" class="btn-delete">Verwijderen</button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-            <?php else: ?>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Naam</th>
+            <th>Dag</th>
+            <th>Lesuur</th>
+            <th>Status</th>
+            <th>Klas</th>
+            <th>Reden</th>
+            <th>Taken</th>
+            <th>Verwijder</th>
+        </tr>
+        <?php if ($result->num_rows > 0): ?>
+            <?php while ($row = $result->fetch_assoc()): ?>
                 <tr>
-                    <td colspan="9">Geen leerkrachten gevonden.</td>
+                    <td><?php echo htmlspecialchars($row['id']); ?></td>
+                    <td><?php echo htmlspecialchars($row['name']); ?></td>
+                    <td>
+                        <input type="text" name="attendance[<?php echo htmlspecialchars($row['id']); ?>][day]" value="<?php echo htmlspecialchars($row['day']); ?>">
+                    </td>
+                    <td><?php echo htmlspecialchars($row['hour']); ?></td>
+                    <td><?php echo htmlspecialchars($row['status']); ?></td>
+                    <td>
+                        <input type="text" name="attendance[<?php echo htmlspecialchars($row['id']); ?>][class]" value="<?php echo htmlspecialchars($row['class']); ?>">
+                    </td>
+                    <td>
+                        <input type="text" name="attendance[<?php echo htmlspecialchars($row['id']); ?>][reason]" value="<?php echo htmlspecialchars($row['reason']); ?>">
+                    </td>
+                    <td>
+                        <input type="text" name="attendance[<?php echo htmlspecialchars($row['id']); ?>][tasks]" value="<?php echo htmlspecialchars($row['tasks']); ?>">
+                    </td>
+                    <td>
+                        <!-- Verwijderknop in dezelfde form -->
+                        <button type="submit" name="delete_id" value="<?php echo htmlspecialchars($row['id']); ?>" class="btn-delete">Verwijderen</button>
+                    </td>
                 </tr>
-            <?php endif; ?>
-        </table>
-        <button type="submit" name="update" class="btn-save">Opslaan</button>
-    </form>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="9">Geen leerkrachten gevonden.</td>
+            </tr>
+        <?php endif; ?>
+    </table>
+    <button type="submit" name="update" class="btn-save">Opslaan</button>
+</form>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
