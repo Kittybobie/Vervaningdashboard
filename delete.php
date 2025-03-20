@@ -22,15 +22,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
 }
 
 
+// Verwerken van het formulier bij het updaten
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
     foreach ($_POST['attendance'] as $id => $attendance) {
+        $day = isset($attendance['day']) ? $attendance['day'] : '';
+
         $update_sql = "UPDATE attendance SET reason = ?, tasks = ?, class = ?, day = ? WHERE id = ?";
         $update_stmt = $conn->prepare($update_sql);
         if ($update_stmt) {
             $reason = $attendance['reason'];
             $tasks = $attendance['tasks'];
             $class = $attendance['class'];
-            $day = $attendance['day'];
             $update_stmt->bind_param("ssssi", $reason, $tasks, $class, $day, $id);
             $update_stmt->execute();
             $update_stmt->close();
@@ -39,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update'])) {
         }
     }
 }
+
 
 
 $sql = "SELECT a.id, t.name, a.hour, a.status, a.reason, a.tasks, a.class, a.day
@@ -142,7 +145,9 @@ $result = $conn->query($sql);
                     <tr>
                         <td><?php echo htmlspecialchars($row['id']); ?></td>
                         <td><?php echo htmlspecialchars($row['name']); ?></td>
-                        <td><?php echo htmlspecialchars($row['day']); ?></td>
+                        <td>
+                            <input type="text" name="attendance[<?php echo htmlspecialchars($row['id']); ?>][day]" value="<?php echo htmlspecialchars($row['day']); ?>">
+                        </td>
                         <td><?php echo htmlspecialchars($row['hour']); ?></td>
                         <td><?php echo htmlspecialchars($row['status']); ?></td>
                         <td>
